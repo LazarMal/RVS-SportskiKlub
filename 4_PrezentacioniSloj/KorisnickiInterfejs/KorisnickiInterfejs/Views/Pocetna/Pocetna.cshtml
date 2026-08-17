@@ -1,0 +1,11 @@
+@{ ViewBag.Title = "Početna"; }
+<div class="jumbotron">
+    <h1>Sportski klub</h1>
+    <p>Evidencija zahteva kandidata za učlanjenje, dokumentacije, provera i statusa.</p>
+    <p>@Html.ActionLink("Otvori zahteve", "Spisak", "ZahtevZaUclanjenje", null, new { @class = "btn btn-primary btn-lg" })</p>
+</div>
+<div class="row">
+    <div class="col-md-4"><h3>Master-detail evidencija</h3><p>Zahtev, kandidat, dokumentacija i roditelj/staratelj čuvaju se kao jedna transakcija.</p></div>
+    <div class="col-md-4"><h3>Poslovno pravilo</h3><p>Odobrenje zavisi od starosti sportskog pregleda, testa sposobnosti i dokumentacije.</p></div>
+    <div class="col-md-4"><h3>Izveštaji</h3><p>Dostupne su štampa svih zahteva, filtriranog spiska i pojedinačnog dokumenta.</p></div>
+</div>

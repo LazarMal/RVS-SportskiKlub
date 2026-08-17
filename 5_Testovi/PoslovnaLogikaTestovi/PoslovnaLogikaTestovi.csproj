@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{46F27D6A-C671-49DB-B43B-13B78A2C81AD}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>PoslovnaLogikaTestovi</RootNamespace>
+    <AssemblyName>PoslovnaLogikaTestovi</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\1_SlojPodataka\KlasePodataka\KlasePodataka\KlasePodataka\KlasePodataka.csproj">
+      <Project>{A97EFA11-6BF2-4935-81D7-5030AC0FB63D}</Project>
+      <Name>KlasePodataka</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\1_SlojPodataka\TehnoloskeKlase\DBUtils\DBUtils\DBUtils.csproj">
+      <Project>{0D7CB5FE-D426-4FF4-9A0D-512CCE060300}</Project>
+      <Name>DBUtils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\2_SlojPoslovneLogike\PoslovnaLogika\PoslovnaLogika\PoslovnaLogika.csproj">
+      <Project>{1D825E26-19DF-423A-9745-3AA9C7817BD7}</Project>
+      <Name>PoslovnaLogika</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

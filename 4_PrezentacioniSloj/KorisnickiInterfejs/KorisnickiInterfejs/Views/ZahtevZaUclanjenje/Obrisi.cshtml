@@ -1,0 +1,5 @@
+@model KlasePodataka.ZahtevZaUclanjenje
+@{ ViewBag.Title = "Brisanje zahteva"; }
+<h2>Brisanje zahteva</h2>
+<div class="alert alert-warning">Biće obrisan zahtev <strong>@Model.BrojZahteva</strong> i svi detalji (dokumentacija, roditelj i istorija statusa).</div>
+@using (Html.BeginForm()) { @Html.AntiForgeryToken()<button class="btn btn-danger" type="submit">Potvrdi brisanje</button> @Html.ActionLink("Odustani", "Detalji", new { id = Model.IDZahteva }, new { @class = "btn btn-default" }) }

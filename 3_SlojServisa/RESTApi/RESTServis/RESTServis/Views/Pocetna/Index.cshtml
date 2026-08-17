@@ -1,0 +1,40 @@
+﻿@{
+    ViewBag.Title = "REST servis";
+}
+
+<div class="jumbotron">
+    <h1>REST servis za zahteve</h1>
+    <p class="lead">
+        Servisni sloj evidencije učlanjivanja kandidata u sportski klub.
+        Servis omogućava pristup podacima o zahtevima u JSON formatu.
+    </p>
+
+    <p>
+        <a href="/api/zahtevi" class="btn btn-primary btn-lg">
+            Prikaži sve zahteve
+        </a>
+    </p>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <h2>Pregled zahteva</h2>
+        <p>
+            REST servis omogućava CRUD nad zahtevima za učlanjenje i preuzimanje parametara poslovnih pravila.
+        </p>
+    </div>
+
+    <div class="col-md-4">
+        <h2>Pregled po identifikatoru</h2>
+        <p>
+            Pojedinačni zahtev može se dobaviti prosleđivanjem identifikatora zahteva u URL adresi.
+        </p>
+    </div>
+
+    <div class="col-md-4">
+        <h2>CRUD operacije</h2>
+        <p>
+            Servis podržava dodavanje, izmenu i brisanje zahteva korišćenjem HTTP metoda.
+        </p>
+    </div>
+</div>

@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Evidencija članstva sportskog kluba</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                @Html.ActionLink("Sportski klub", "Spisak", "ZahtevZaUclanjenje", null, new { @class = "navbar-brand" })
+            </div>
+
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Zahtevi", "Spisak", "ZahtevZaUclanjenje")</li>
+                    <li>@Html.ActionLink("Novi zahtev", "Dodaj", "ZahtevZaUclanjenje")</li>
+                    <li>
+                        <a href="@(System.Configuration.ConfigurationManager.AppSettings["RestServisOsnovnaAdresa"] + "api/zahtevi")"
+                           target="_blank"
+                           class="btn btn-default">
+                            REST API
+                        </a>
+                    </li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    @if (Session["IDKorisnika"] != null)
+                    {
+                        <li><a href="#">@Session["Ime"] @Session["Prezime"] (@Session["Uloga"])</a></li>
+                        <li>@Html.ActionLink("Odjava", "Odjava", "Nalog")</li>
+                    }
+                    else
+                    {
+                        <li>@Html.ActionLink("Prijava", "Prijava", "Nalog")</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Evidencija učlanjivanja kandidata u sportski klub</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

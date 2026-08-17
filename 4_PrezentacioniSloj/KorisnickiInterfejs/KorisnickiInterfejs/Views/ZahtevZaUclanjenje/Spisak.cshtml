@@ -1,0 +1,40 @@
+@model IEnumerable<KlasePodataka.ZahtevZaUclanjenje>
+@{ ViewBag.Title = "Zahtevi za učlanjenje"; }
+<h2>Zahtevi za učlanjenje u sportski klub</h2>
+@if (TempData["Poruka"] != null) { <div class="alert alert-success">@TempData["Poruka"]</div> }
+<div class="row no-print">
+    <div class="col-md-7">
+        @using (Html.BeginForm("Spisak", "ZahtevZaUclanjenje", FormMethod.Get, new { @class = "form-inline" }))
+        {
+            <input name="pretraga" value="@ViewBag.Filter" class="form-control" placeholder="broj, JMBG, kandidat, disciplina ili status" style="min-width:420px" />
+            <button class="btn btn-default" type="submit">Pretraži</button>
+        }
+    </div>
+    <div class="col-md-5 text-right">
+        @Html.ActionLink("Novi zahtev", "Dodaj", null, new { @class = "btn btn-primary" })
+        @Html.ActionLink("Štampa svih", "StampaSvih", null, new { @class = "btn btn-default", target = "_blank" })
+        @Html.ActionLink("Štampa filtriranih", "StampaFiltriranih", new { pretraga = ViewBag.Filter }, new { @class = "btn btn-default", target = "_blank" })
+    </div>
+</div>
+<br />
+<table class="table table-striped table-bordered">
+    <thead><tr><th>Broj</th><th>Kandidat</th><th>Disciplina</th><th>Sezona</th><th>Datum</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var z in Model)
+    {
+        <tr>
+            <td>@z.BrojZahteva</td>
+            <td>@z.Kandidat.Ime @z.Kandidat.Prezime<br /><small>@z.JMBGKandidata</small></td>
+            <td>@z.SportskaDisciplina.Naziv</td>
+            <td>@z.Sezona</td>
+            <td>@z.DatumPodnosenja.ToString("dd.MM.yyyy")</td>
+            <td>@z.StatusZahteva</td>
+            <td class="text-nowrap">
+                @Html.ActionLink("Detalji", "Detalji", new { id = z.IDZahteva }, new { @class = "btn btn-xs btn-info" })
+                @Html.ActionLink("Izmeni", "Izmeni", new { id = z.IDZahteva }, new { @class = "btn btn-xs btn-default" })
+                @Html.ActionLink("Štampa", "StampaZahteva", new { id = z.IDZahteva }, new { @class = "btn btn-xs btn-default", target = "_blank" })
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

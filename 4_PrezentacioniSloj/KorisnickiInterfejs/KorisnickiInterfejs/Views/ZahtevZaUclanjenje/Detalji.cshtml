@@ -1,0 +1,53 @@
+@model KlasePodataka.ZahtevZaUclanjenje
+@{ ViewBag.Title = "Detalji zahteva"; }
+<h2>Zahtev @Model.BrojZahteva</h2>
+@if (TempData["Poruka"] != null) { <div class="alert alert-success">@TempData["Poruka"]</div> }
+@if (TempData["Greska"] != null) { <div class="alert alert-danger">@TempData["Greska"]</div> }
+<div class="row">
+    <div class="col-md-6">
+        <h3>Kandidat</h3>
+        <dl class="dl-horizontal">
+            <dt>Ime i prezime</dt><dd>@Model.Kandidat.Ime @Model.Kandidat.Prezime</dd>
+            <dt>JMBG</dt><dd>@Model.Kandidat.JMBG</dd>
+            <dt>Datum rođenja</dt><dd>@Model.Kandidat.DatumRodjenja.ToString("dd.MM.yyyy")</dd>
+            <dt>Pol</dt><dd>@Model.Kandidat.Pol</dd>
+            <dt>Državljanstvo</dt><dd>@Model.Kandidat.Drzavljanstvo</dd>
+            <dt>Adresa</dt><dd>@Model.Kandidat.Adresa</dd>
+            <dt>Kontakt</dt><dd>@Model.Kandidat.KontaktTelefon / @Model.Kandidat.Email</dd>
+        </dl>
+    </div>
+    <div class="col-md-6">
+        <h3>Članstvo</h3>
+        <dl class="dl-horizontal">
+            <dt>Disciplina</dt><dd>@Model.SportskaDisciplina.Sifra - @Model.SportskaDisciplina.Naziv</dd>
+            <dt>Datum podnošenja</dt><dd>@Model.DatumPodnosenja.ToString("dd.MM.yyyy")</dd>
+            <dt>Sezona</dt><dd>@Model.Sezona</dd>
+            <dt>Mesto kluba</dt><dd>@Model.MestoKluba</dd>
+            <dt>Sportski pregled</dt><dd>@Model.DatumSportskogPregleda.ToString("dd.MM.yyyy")</dd>
+            <dt>Test sposobnosti</dt><dd>@Model.RezultatTestaSposobnosti</dd>
+            <dt>Status</dt><dd><strong>@Model.StatusZahteva</strong></dd>
+            <dt>Napomena</dt><dd>@Model.Napomena</dd>
+        </dl>
+    </div>
+</div>
+<h3>Dokumentacija</h3>
+<table class="table table-bordered"><tr><th>Dokument</th><th>Dostavljeno</th></tr>
+@foreach (var d in Model.Dokumentacija.OrderBy(d => d.IDDokumentacije)) { <tr><td>@d.NazivDokumenta</td><td>@(d.Dostavljeno ? "Da" : "Ne")</td></tr> }
+</table>
+@if (Model.RoditeljiStaratelji.Any())
+{
+    var r = Model.RoditeljiStaratelji.First();
+    <h3>Roditelj/staratelj</h3>
+    <p>@r.ImePrezime, JMBG @r.JMBG, @r.Srodstvo, @r.KontaktTelefon, @r.Email</p>
+}
+<h3>Istorija statusa</h3>
+<table class="table table-condensed"><tr><th>Datum</th><th>Promena</th><th>Korisnik</th><th>Napomena</th></tr>
+@foreach (var i in Model.IstorijaStatusa.OrderByDescending(i => i.DatumPromene)) { <tr><td>@i.DatumPromene.ToString("dd.MM.yyyy HH:mm")</td><td>@(i.StariStatus ?? "-") → @i.NoviStatus</td><td>@i.KorisnickoIme</td><td>@i.Napomena</td></tr> }
+</table>
+<div class="no-print">
+    @using (Html.BeginForm("Odobri", "ZahtevZaUclanjenje", new { id = Model.IDZahteva }, FormMethod.Post, new { style = "display:inline" })) { @Html.AntiForgeryToken()<button class="btn btn-success" type="submit">Proveri pravilo i odobri</button> }
+    @Html.ActionLink("Izmeni", "Izmeni", new { id = Model.IDZahteva }, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Štampa dokumenta", "StampaZahteva", new { id = Model.IDZahteva }, new { @class = "btn btn-default", target = "_blank" })
+    @if (Session["Uloga"] != null && Session["Uloga"].ToString() == "Administrator") { @Html.ActionLink("Obriši", "Obrisi", new { id = Model.IDZahteva }, new { @class = "btn btn-danger" }) }
+    @Html.ActionLink("Nazad", "Spisak", null, new { @class = "btn btn-default" })
+</div>

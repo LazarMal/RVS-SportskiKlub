@@ -1,0 +1,12 @@
+@model PrezentacionaLogika.PogledModeli.ZahtevZaUclanjenjePrikazModel
+@{ ViewBag.Title = "Novi zahtev"; }
+<h2>Novi zahtev za učlanjenje</h2>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+    @Html.Partial("_Forma", Model)
+    <button type="submit" class="btn btn-primary">Sačuvaj zahtev i detalje</button>
+    @Html.ActionLink("Odustani", "Spisak", null, new { @class = "btn btn-default" })
+}
+@section scripts { @Scripts.Render("~/bundles/jqueryval") }

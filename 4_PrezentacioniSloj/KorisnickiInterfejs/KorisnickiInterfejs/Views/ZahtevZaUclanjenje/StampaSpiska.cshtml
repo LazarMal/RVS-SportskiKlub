@@ -1,0 +1,10 @@
+@model IEnumerable<KlasePodataka.ZahtevZaUclanjenje>
+@{ Layout = null; }
+<!doctype html><html><head><meta charset="utf-8" /><title>@ViewBag.NaslovStampe</title><style>body{font-family:Arial;margin:24px;color:#111}h1{font-size:22px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #555;padding:6px;text-align:left}small{color:#555}.actions{margin-bottom:16px}@@media print{.actions{display:none}}</style></head><body>
+<div class="actions"><button onclick="window.print()">Štampaj</button></div>
+<h1>@ViewBag.NaslovStampe</h1>
+@if (!string.IsNullOrWhiteSpace(ViewBag.Filter as string)) { <p>Filter: <strong>@ViewBag.Filter</strong></p> }
+<p>Datum izveštaja: @DateTime.Now.ToString("dd.MM.yyyy HH:mm") | Ukupno: @Model.Count()</p>
+<table><thead><tr><th>Broj</th><th>Kandidat / JMBG</th><th>Disciplina</th><th>Sezona</th><th>Datum</th><th>Status</th></tr></thead><tbody>
+@foreach (var z in Model) { <tr><td>@z.BrojZahteva</td><td>@z.Kandidat.Ime @z.Kandidat.Prezime<br /><small>@z.JMBGKandidata</small></td><td>@z.SportskaDisciplina.Naziv</td><td>@z.Sezona</td><td>@z.DatumPodnosenja.ToString("dd.MM.yyyy")</td><td>@z.StatusZahteva</td></tr> }
+</tbody></table></body></html>

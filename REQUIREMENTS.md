@@ -1,0 +1,50 @@
+# RVS - matrica zahteva
+
+Statusi: `MISSING`, `PARTIAL`, `IMPLEMENTED`, `VERIFIED`, `PROBLEM`. `IMPLEMENTED` znači da statički dokaz postoji, ali runtime još nije potvrđen. `VERIFIED` se dodeljuje tek posle konkretnog izvršavanja u Windows/.NET Framework/SQL Server okruženju.
+
+| ID | Profesorkin zahtev | Status | Dokaz / trenutno stanje | Fajl ili metoda | Runtime test |
+| --- | --- | --- | --- | --- | --- |
+| RVS-001 | ASP.NET MVC multipage aplikacija | IMPLEMENTED | MVC 5 projekat ima prijavu, listu, unos, izmenu, detalje, brisanje i štampe | `KorisnickiInterfejs.csproj`, MVC kontroleri i prikazi | Otvoriti sve glavne rute |
+| RVS-002 | REST servis | IMPLEMENTED | Zaseban Web API 2 projekat ima CRUD i endpoint parametara | `RESTServis.csproj`, `ZahteviController`, `ParametriController` | GET/POST/PUT/DELETE i parametri |
+| RVS-003 | MS SQL Server relaciona baza | VERIFIED | Skript je 16.08.2026. uspešno izvršen na čistoj `(localdb)\MSSQLLocalDB` instanci; kreirani su baza, šema i seed bez SQL greške | `InstalacijaBaze.sql`; screenshot `Query executed successfully` | Čista instalacija prošla; zaštitno drugo izvršavanje još proveriti |
+| RVS-004 | Entity Framework | IMPLEMENTED | Code First EF6 klase i kontekst 1:1 prate sportsku šemu; Windows runtime je uspešno učitao seed listu kroz EF nakon registracije provider-a | `SportskiKlubKontekst` i entiteti | EF čitanje prošlo; Create/Edit/Delete još proveriti |
+| RVS-005 | OOP sa nasleđivanjem | IMPLEMENTED | `TabelaKlasa : OsnovnaTehnoloskaKlasa`; konkretan repozitorijum nasleđuje `TabelaKlasa` | `OsnovnaTehnoloskaKlasa`, `TabelaKlasa`, `SportskaDisciplinaRepozitorijum` | Pozvati `DajAktivne` i `DajOpisObrade` |
+| RVS-006 | Kod, baza i UI na srpskom | IMPLEMENTED | Aktivni domenski modeli, metode, SQL, DTO i UI koriste sportski domen i srpske nazive | svi aktivni domenski fajlovi | Pregled UI/API/SQL |
+| RVS-007 | Glavna tabela | IMPLEMENTED | `ZahtevZaUclanjenje` je glavna poslovna tabela i EF entitet | SQL i `ZahtevZaUclanjenje.cs` | CRUD zahteva |
+| RVS-008 | Pravi povezani šifarnik | IMPLEMENTED | `SportskaDisciplina` ima PK, UNIQUE šifru/naziv, seed i FK iz glavne tabele; puni dropdown | SQL, `SportskaDisciplinaRepozitorijum`, `PopuniDiscipline` | Dropdown iz baze |
+| RVS-009 | Nezavisna tabela korisnika | IMPLEMENTED | `Korisnik` nema poslovni FK; login koristi njen SP rezultat | SQL, `Korisnik.cs`, `KorisnikRepozitorijum.Prijavi` | Ispravan i pogrešan login |
+| RVS-010 | Repository Pattern u posebnoj biblioteci | IMPLEMENTED | Interfejsi i implementacije su u `DBUtils` Class Library; MVC/REST ih pozivaju | `DBUtils.csproj`, `Repozitorijumi` | CRUD kroz repozitorijume |
+| RVS-011 | Metode repozitorijuma na srpskom | IMPLEMENTED | Aktivne metode su `DajSve`, `DajPoId`, `DodajSaDetaljima`, `IzmeniSaDetaljima`, `Obrisi` itd. | interfejsi repozitorijuma | Pozivi svih metoda |
+| RVS-012 | SqlClient + Stored Procedure sa stvarnim rezultatom | IMPLEMENTED | Login izvršava `dbo.PrijaviKorisnika`, čita `SqlDataReader`, mapira korisnika i sesija zavisi od rezultata | `KorisnikRepozitorijum.Prijavi`, SQL SP | Login uspeh/neuspeh |
+| RVS-013 | Nasleđivanje Tabela/DBUtils + SQL upit | IMPLEMENTED | Šifarnik se čita parametrizovanim tekstualnim SQL upitom kroz nasleđenu `IzvrsiUpitSelect` | `SportskaDisciplinaRepozitorijum.DajAktivne` | Učitavanje disciplina |
+| RVS-014 | Entity Framework slučaj korišćenja | IMPLEMENTED | EF izvršava listu, detalje, create/edit/delete i transakcioni master-detail | `ZahtevZaUclanjenjeRepozitorijum` | CRUD + detalji |
+| RVS-015 | REST obezbeđuje parametar poslovnoj logici | IMPLEMENTED | Business klijent HTTP GET-om čita `/api/parametri/poslovna-pravila`; ne čita JSON fajl | `RestParametriPoslovnihPravilaServis.DajParametre` | Promeniti JSON X i ponoviti proveru |
+| RVS-016 | REST CRUD između slojeva | IMPLEMENTED | DTO kontroler koristi mapiranje i repozitorijum za GET/POST/PUT/DELETE | `ZahteviController` | Svih pet CRUD poziva |
+| RVS-017 | Poslovna logika kao Class Library | IMPLEMENTED | Pravila su u zasebnom projektu i iza interfejsa | `PoslovnaLogika.csproj` | Poziv iz MVC i test-runnera |
+| RVS-018 | Poslovno pravilo pregled + test | IMPLEMENTED | Proverava budući/star datum, rezultat testa i dve obavezne stavke dokumentacije | `OdobravanjeZahtevaServis.ProveriIOdobri` | 5 obaveznih scenarija |
+| RVS-019 | Parametar X u JSON/XML | IMPLEMENTED | JSON ima početno X=6 i validira opseg | `App_Data/poslovna_pravila.json`, `ParametriPoslovnihPravilaDatoteka` | Promeniti 6 i proveriti rezultat |
+| RVS-020 | Metod pravila poziva data sloj i servis | IMPLEMENTED | Ista javna metoda poziva `repozitorijum.DajPoId` i `servisParametara.DajParametre`; fake test broji oba poziva | `OdobravanjeZahtevaServis`, `PoslovnaLogikaTestovi` | Pokrenuti konzolni test-runner |
+| RVS-021 | Status Odobren bez mogućnosti zaobilaženja | IMPLEMENTED | MVC Edit, REST PUT i generička promena statusa odbijaju `Odobren`; business servis poziva poseban put tek posle provere | kontroler, REST i repozitorijum | Pokušati direktan MVC/REST unos |
+| RVS-022 | MVC sa ViewModelom za Create | IMPLEMENTED | Create GET/POST koristi `ZahtevZaUclanjenjePrikazModel` | `Dodaj`, `_Forma.cshtml` | Validan i nevalidan POST |
+| RVS-023 | MVC sa ViewModelom za Edit | IMPLEMENTED | Edit GET/POST koristi isti ViewModel; EF entitet nije POST model | `Izmeni`, `_Forma.cshtml` | Izmena dozvoljenih polja |
+| RVS-024 | Login/logout | IMPLEMENTED | Login mapira SP rezultat u sesiju; logout čisti i napušta sesiju | `NalogController` | Login, pogrešan login, logout |
+| RVS-025 | Zaštita bez sesije | IMPLEMENTED | Kontroler zahteva ima globalni sesijski atribut koji preusmerava na prijavu | `AutorizacijaSesijeAtribut`, `ZahtevZaUclanjenjeController` | Direktan pristup zaštićenoj ruti |
+| RVS-026 | Lista i filter/pretraga | IMPLEMENTED | EF upit filtrira broj, JMBG, ime, prezime, disciplinu i status; rezultat se direktno prikazuje | `DajSve(filter)`, `Spisak` | Proveriti tačan podskup |
+| RVS-027 | Create master-detail na jednoj formi | IMPLEMENTED | Jedna forma šalje zahtev, kandidata, dokumentaciju i roditelja; repozitorijum čuva graf | `_Forma`, `DodajSaDetaljima` | Unos mastera i više detalja |
+| RVS-028 | Transakcija i rollback | IMPLEMENTED | Create/Edit su u `DbContextTransaction`; catch eksplicitno radi rollback | `DodajSaDetaljima`, `IzmeniSaDetaljima` | Izazvati duplikat naziva detail stavke |
+| RVS-029 | Detail prikaz mastera i svih delova | IMPLEMENTED | Prikaz obuhvata kandidata, zahtev, šifarnik, dokumentaciju, roditelja i istoriju | `Detalji.cshtml`, `DajPoId` | Otvoriti zahtev sa svim detaljima |
+| RVS-030 | Edit bez orphan zapisa | IMPLEMENTED | Kolekcija dokumentacije se sinhronizuje: ažurira, dodaje i briše; roditelj se dodaje/menja/briše u istoj transakciji | `SinhronizujDokumentaciju`, `SinhronizujRoditelja` | Dodati/ukloniti detail i proveriti bazu |
+| RVS-031 | Delete bez orphan zapisa | IMPLEMENTED | SQL i EF cascade brišu dokumentaciju, roditelja i istoriju; repozitorijum briše master | FK `ON DELETE CASCADE`, `Obrisi` | Brisanje celog grafa |
+| RVS-032 | Promena i istorija statusa | IMPLEMENTED | Create upisuje početni zapis, Edit i odobrenje upisuju samo stvarnu promenu | `DodajIstoriju`, metode promene statusa | Promeniti svaki dozvoljeni status |
+| RVS-033 | Validacije obaveznosti/tipa/dužine/domena | IMPLEMENTED | DataAnnotations, server domenska validacija i SQL CHECK ograničenja pokrivaju ključna polja | ViewModel, DTO, kontroleri, SQL | Pozitivni i negativni unosi |
+| RVS-034 | Jedinstvenost | IMPLEMENTED | JMBG je PK, korisničko ime/šifre šifarnika i broj zahteva su UNIQUE; broj zahteva se generiše server-side | SQL i EF anotacije | Pokušaj duplikata |
+| RVS-035 | JMBG/email/telefon/datum/sezona | IMPLEMENTED | JMBG regex, email validator, telefonski regex, datumske granice i semantička provera sezone postoje u MVC i REST toku | ViewModel, DTO, `Validiraj`, `ValidirajDomen` | Negativni i granični unosi |
+| RVS-036 | Uslovna dokumentacija i roditelj | IMPLEMENTED | MVC dobija granicu preko REST klijenta; REST CRUD čita isti validirani JSON izvor; oba zahtevaju roditelja i saglasnost za maloletnika | MVC/REST validacija | Maloletan i punoletan kandidat |
+| RVS-037 | JavaScript i regularni izrazi | IMPLEMENTED | Unobtrusive validacija i regex atributi rade client/server; poseban JS uživo prikazuje spremnost dokumentacije/testa | `zahtev-forma.js`, `_Forma`, ViewModel | Menjati test/dokumenta i nevalidne obrasce |
+| RVS-038 | Štampa svih zahteva | IMPLEMENTED | Posebna akcija i printer-friendly prikaz bez filtera | `StampaSvih`, `StampaSpiska.cshtml` | Print preview svih |
+| RVS-039 | Štampa filtriranog spiska | IMPLEMENTED | Posebna akcija ponavlja isti filter i prikazuje ga u zaglavlju | `StampaFiltriranih` | Uporediti sa filtriranom listom |
+| RVS-040 | Parametarska štampa pojedinačnog dokumenta | IMPLEMENTED | Akcija prima ID i prikaz sadrži sva prijavljena master/detail polja i potpise | `StampaZahteva(id)`, `StampaZahteva.cshtml` | Print preview jednog zahteva |
+| RVS-041 | Clean solution build | VERIFIED | Na Visual Studio Community 2022 posle NuGet Restore + Clean/Rebuild dobijeno je `8 succeeded, 0 failed, 0 skipped` | `KorisnickiInterfejs.sln`, svi `.csproj`; Build Output 16.08.2026. | Prošao Clean/Rebuild na Windowsu |
+| RVS-042 | Clean database install | VERIFIED | Nedestruktivni skript je uspešno kreirao bazu od nule na LocalDB instanci | `InstalacijaBaze.sql`; SSMS izvršavanje 16.08.2026. | Prvo izvršavanje prošlo; drugo zaštitno izvršavanje još proveriti |
+| RVS-043 | Nema aktivnih tragova lične karte | IMPLEMENTED | Legacy modeli, kontroleri, prikazi, SQL i konfiguracije uklonjeni; ciljana globalna pretraga aktivnog koda nema pogodaka; radni direktorijum je preimenovan | aktivno stablo projekta | Ponoviti `rg` pre pakovanja; paket bez `.git` |
+| RVS-044 | Dokumentacija odgovara finalnom kodu | MISSING | Stara DOCX ostaje samo izvorni šablon; nova dokumentacija se ne pravi pre code freeze-a i runtime prolaza | budući finalni DOCX | Audit dijagrama, slika, listinga i rendera |

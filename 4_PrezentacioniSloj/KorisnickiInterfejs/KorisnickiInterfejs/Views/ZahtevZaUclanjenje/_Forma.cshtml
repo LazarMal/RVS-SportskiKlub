@@ -1,0 +1,100 @@
+@model PrezentacionaLogika.PogledModeli.ZahtevZaUclanjenjePrikazModel
+
+@Html.HiddenFor(m => m.IDZahteva)
+@Html.HiddenFor(m => m.BrojZahteva)
+@Html.HiddenFor(m => m.DatumPodnosenja)
+
+<div class="panel panel-default">
+    <div class="panel-heading"><strong>Podaci o kandidatu</strong></div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-4 form-group">@Html.LabelFor(m => m.JMBG) @Html.TextBoxFor(m => m.JMBG, new { @class = "form-control", maxlength = "13", pattern = "[0-9]{13}" }) @Html.ValidationMessageFor(m => m.JMBG, "", new { @class = "text-danger" })</div>
+            <div class="col-md-4 form-group">@Html.LabelFor(m => m.Ime) @Html.TextBoxFor(m => m.Ime, new { @class = "form-control" }) @Html.ValidationMessageFor(m => m.Ime, "", new { @class = "text-danger" })</div>
+            <div class="col-md-4 form-group">@Html.LabelFor(m => m.Prezime) @Html.TextBoxFor(m => m.Prezime, new { @class = "form-control" }) @Html.ValidationMessageFor(m => m.Prezime, "", new { @class = "text-danger" })</div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 form-group">@Html.LabelFor(m => m.DatumRodjenja) @Html.TextBoxFor(m => m.DatumRodjenja, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" }) @Html.ValidationMessageFor(m => m.DatumRodjenja, "", new { @class = "text-danger" })</div>
+            <div class="col-md-4 form-group">@Html.LabelFor(m => m.Pol) @Html.DropDownListFor(m => m.Pol, new SelectList(new[] { "M", "Ž" }, Model.Pol), "-- izaberite --", new { @class = "form-control" }) @Html.ValidationMessageFor(m => m.Pol, "", new { @class = "text-danger" })</div>
+            <div class="col-md-4 form-group">@Html.LabelFor(m => m.Drzavljanstvo) @Html.TextBoxFor(m => m.Drzavljanstvo, new { @class = "form-control" }) @Html.ValidationMessageFor(m => m.Drzavljanstvo, "", new { @class = "text-danger" })</div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 form-group">@Html.LabelFor(m => m.Adresa) @Html.TextBoxFor(m => m.Adresa, new { @class = "form-control" }) @Html.ValidationMessageFor(m => m.Adresa, "", new { @class = "text-danger" })</div>
+            <div class="col-md-3 form-group">@Html.LabelFor(m => m.KontaktTelefon) @Html.TextBoxFor(m => m.KontaktTelefon, new { @class = "form-control", pattern = "\\+?[0-9][0-9 /-]{6,19}" }) @Html.ValidationMessageFor(m => m.KontaktTelefon, "", new { @class = "text-danger" })</div>
+            <div class="col-md-3 form-group">@Html.LabelFor(m => m.Email) @Html.TextBoxFor(m => m.Email, new { @class = "form-control", type = "email" }) @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })</div>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading"><strong>Podaci o zahtevu</strong></div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-4 form-group">@Html.LabelFor(m => m.IDSportskeDiscipline) @Html.DropDownListFor(m => m.IDSportskeDiscipline, new SelectList(Model.SportskeDiscipline, "Vrednost", "Tekst", Model.IDSportskeDiscipline), "-- izaberite --", new { @class = "form-control" }) @Html.ValidationMessageFor(m => m.IDSportskeDiscipline, "", new { @class = "text-danger" })</div>
+            <div class="col-md-2 form-group">@Html.LabelFor(m => m.Sezona) @Html.TextBoxFor(m => m.Sezona, new { @class = "form-control", placeholder = "2026/27", pattern = "[0-9]{4}/[0-9]{2}" }) @Html.ValidationMessageFor(m => m.Sezona, "", new { @class = "text-danger" })</div>
+            <div class="col-md-3 form-group">@Html.LabelFor(m => m.MestoKluba) @Html.TextBoxFor(m => m.MestoKluba, new { @class = "form-control" }) @Html.ValidationMessageFor(m => m.MestoKluba, "", new { @class = "text-danger" })</div>
+            <div class="col-md-3 form-group">@Html.LabelFor(m => m.DatumSportskogPregleda) @Html.TextBoxFor(m => m.DatumSportskogPregleda, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" }) @Html.ValidationMessageFor(m => m.DatumSportskogPregleda, "", new { @class = "text-danger" })</div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 form-group">@Html.LabelFor(m => m.RezultatTestaSposobnosti) @Html.DropDownListFor(m => m.RezultatTestaSposobnosti, new SelectList(new[] { "Položen", "Nije položen", "Nije realizovan" }, Model.RezultatTestaSposobnosti), new { @class = "form-control" }) @Html.ValidationMessageFor(m => m.RezultatTestaSposobnosti, "", new { @class = "text-danger" })</div>
+            <div class="col-md-4 form-group">
+                @Html.LabelFor(m => m.StatusZahteva)
+                @if (Model.IDZahteva == 0)
+                {
+                    @Html.HiddenFor(m => m.StatusZahteva)
+                    <p class="form-control-static">U obradi (automatski)</p>
+                }
+                else
+                {
+                    var statusi = new[] { "U obradi", "Na proveri", "Odbijen" };
+                    @Html.DropDownListFor(m => m.StatusZahteva, new SelectList(statusi, Model.StatusZahteva), new { @class = "form-control" })
+                }
+                @Html.ValidationMessageFor(m => m.StatusZahteva, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-4 form-group">@Html.LabelFor(m => m.Napomena) @Html.TextAreaFor(m => m.Napomena, 3, 40, new { @class = "form-control" }) @Html.ValidationMessageFor(m => m.Napomena, "", new { @class = "text-danger" })</div>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading"><strong>Dokumentacija (master-detail stavke)</strong></div>
+    <div class="panel-body">
+        @for (int i = 0; i < Model.Dokumentacija.Count; i++)
+        {
+            @Html.HiddenFor(m => m.Dokumentacija[i].IDDokumentacije)
+            @Html.HiddenFor(m => m.Dokumentacija[i].NazivDokumenta)
+            <div class="checkbox">
+                <label>
+                    @Html.CheckBoxFor(
+                        m => m.Dokumentacija[i].Dostavljeno,
+                        new
+                        {
+                            data_naziv_dokumenta = Model.Dokumentacija[i].NazivDokumenta,
+                            data_obavezno_odobrenje =
+                                Model.Dokumentacija[i].NazivDokumenta == "Potvrda o sportskom pregledu" ||
+                                Model.Dokumentacija[i].NazivDokumenta == "Evidencija o položenom testu sposobnosti"
+                                    ? "true"
+                                    : "false"
+                        })
+                    @Model.Dokumentacija[i].NazivDokumenta
+                </label>
+            </div>
+        }
+        @Html.ValidationMessage("Dokumentacija", new { @class = "text-danger" })
+        <div id="indikator-poslovnog-pravila" class="alert" role="status"></div>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading"><strong>Roditelj/staratelj (obavezno za maloletnog kandidata)</strong></div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-4 form-group">@Html.LabelFor(m => m.RoditeljImePrezime) @Html.TextBoxFor(m => m.RoditeljImePrezime, new { @class = "form-control" })</div>
+            <div class="col-md-4 form-group">@Html.LabelFor(m => m.RoditeljJMBG) @Html.TextBoxFor(m => m.RoditeljJMBG, new { @class = "form-control", maxlength = "13", pattern = "[0-9]{13}" }) @Html.ValidationMessageFor(m => m.RoditeljJMBG, "", new { @class = "text-danger" })</div>
+            <div class="col-md-4 form-group">@Html.LabelFor(m => m.Srodstvo) @Html.TextBoxFor(m => m.Srodstvo, new { @class = "form-control" })</div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 form-group">@Html.LabelFor(m => m.RoditeljTelefon) @Html.TextBoxFor(m => m.RoditeljTelefon, new { @class = "form-control" }) @Html.ValidationMessageFor(m => m.RoditeljTelefon, "", new { @class = "text-danger" })</div>
+            <div class="col-md-4 form-group">@Html.LabelFor(m => m.RoditeljEmail) @Html.TextBoxFor(m => m.RoditeljEmail, new { @class = "form-control", type = "email" }) @Html.ValidationMessageFor(m => m.RoditeljEmail, "", new { @class = "text-danger" })</div>
+        </div>
+    </div>
+</div>
