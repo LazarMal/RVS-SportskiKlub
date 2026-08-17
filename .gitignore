@@ -10,3 +10,5 @@ packages/
 *.pdb
 *.dll
 *.cache
+desktop.ini
+Thumbs.db
