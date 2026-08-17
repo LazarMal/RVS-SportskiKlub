@@ -4,7 +4,7 @@
 @Html.HiddenFor(m => m.BrojZahteva)
 @Html.HiddenFor(m => m.DatumPodnosenja)
 
-<div class="panel panel-default">
+<div class="panel panel-default section-card">
     <div class="panel-heading"><strong>Podaci o kandidatu</strong></div>
     <div class="panel-body">
         <div class="row">
@@ -25,7 +25,7 @@
     </div>
 </div>
 
-<div class="panel panel-default">
+<div class="panel panel-default section-card">
     <div class="panel-heading"><strong>Podaci o zahtevu</strong></div>
     <div class="panel-body">
         <div class="row">
@@ -55,7 +55,7 @@
     </div>
 </div>
 
-<div class="panel panel-default">
+<div class="panel panel-default section-card">
     <div class="panel-heading"><strong>Dokumentacija (master-detail stavke)</strong></div>
     <div class="panel-body">
         @for (int i = 0; i < Model.Dokumentacija.Count; i++)
@@ -84,7 +84,7 @@
     </div>
 </div>
 
-<div class="panel panel-default">
+<div class="panel panel-default section-card">
     <div class="panel-heading"><strong>Roditelj/staratelj (obavezno za maloletnog kandidata)</strong></div>
     <div class="panel-body">
         <div class="row">

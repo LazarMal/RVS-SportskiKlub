@@ -1,11 +1,26 @@
 @{ ViewBag.Title = "Početna"; }
-<div class="jumbotron">
+
+<section class="hero">
+    <p class="page-kicker">Evidencija članstva</p>
     <h1>Sportski klub</h1>
-    <p>Evidencija zahteva kandidata za učlanjenje, dokumentacije, provera i statusa.</p>
-    <p>@Html.ActionLink("Otvori zahteve", "Spisak", "ZahtevZaUclanjenje", null, new { @class = "btn btn-primary btn-lg" })</p>
-</div>
-<div class="row">
-    <div class="col-md-4"><h3>Master-detail evidencija</h3><p>Zahtev, kandidat, dokumentacija i roditelj/staratelj čuvaju se kao jedna transakcija.</p></div>
-    <div class="col-md-4"><h3>Poslovno pravilo</h3><p>Odobrenje zavisi od starosti sportskog pregleda, testa sposobnosti i dokumentacije.</p></div>
-    <div class="col-md-4"><h3>Izveštaji</h3><p>Dostupne su štampa svih zahteva, filtriranog spiska i pojedinačnog dokumenta.</p></div>
+    <p>Centralno mesto za prijem kandidata, proveru dokumentacije, primenu poslovnog pravila i praćenje statusa zahteva.</p>
+    @Html.ActionLink("Otvori zahteve", "Spisak", "ZahtevZaUclanjenje", null, new { @class = "btn btn-accent btn-lg" })
+</section>
+
+<div class="feature-grid">
+    <section class="info-card">
+        <span class="card-index">01 · EVIDENCIJA</span>
+        <h3>Master-detail zahtev</h3>
+        <p>Zahtev, kandidat, dokumentacija i roditelj/staratelj čuvaju se kao jedna transakcija.</p>
+    </section>
+    <section class="info-card">
+        <span class="card-index">02 · PROVERA</span>
+        <h3>Poslovno pravilo</h3>
+        <p>Odobrenje zavisi od starosti sportskog pregleda, testa sposobnosti i dokumentacije.</p>
+    </section>
+    <section class="info-card">
+        <span class="card-index">03 · IZVEŠTAJI</span>
+        <h3>Tri vrste štampe</h3>
+        <p>Dostupne su štampa svih zahteva, filtriranog spiska i pojedinačnog dokumenta.</p>
+    </section>
 </div>

@@ -1,13 +1,6 @@
-﻿<!DOCTYPE html>
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Error</title>
-</head>
-<body>
-    <hgroup>
-        <h1>Error.</h1>
-        <h2>An error occurred while processing your request.</h2>
-    </hgroup>
-</body>
-</html>
+﻿@{ ViewBag.Title = "Greška"; }
+<div class="page-heading"><div><p class="page-kicker">Obaveštenje sistema</p><h1>Došlo je do greške</h1><p>Zahtev trenutno nije moguće obraditi.</p></div></div>
+<section class="surface">
+    <p>Vratite se na pregled zahteva i pokušajte ponovo.</p>
+    @Html.ActionLink("Nazad na zahteve", "Spisak", "ZahtevZaUclanjenje", null, new { @class = "btn btn-default" })
+</section>

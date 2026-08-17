@@ -1,11 +1,21 @@
 @model KlasePodataka.ZahtevZaUclanjenje
 @{ ViewBag.Title = "Detalji zahteva"; }
-<h2>Zahtev @Model.BrojZahteva</h2>
+
+<div class="page-heading">
+    <div>
+        <p class="page-kicker">Kompletna evidencija</p>
+        <h1>Zahtev @Model.BrojZahteva</h1>
+        <p>Podaci kandidata, članstva, dokumentacije i istorije statusa.</p>
+    </div>
+    <span class="status-chip status-neutral">@Model.StatusZahteva</span>
+</div>
+
 @if (TempData["Poruka"] != null) { <div class="alert alert-success">@TempData["Poruka"]</div> }
 @if (TempData["Greska"] != null) { <div class="alert alert-danger">@TempData["Greska"]</div> }
-<div class="row">
-    <div class="col-md-6">
-        <h3>Kandidat</h3>
+
+<div class="detail-grid">
+    <section class="surface detail-card">
+        <h3>Podaci o kandidatu</h3>
         <dl class="dl-horizontal">
             <dt>Ime i prezime</dt><dd>@Model.Kandidat.Ime @Model.Kandidat.Prezime</dd>
             <dt>JMBG</dt><dd>@Model.Kandidat.JMBG</dd>
@@ -15,9 +25,9 @@
             <dt>Adresa</dt><dd>@Model.Kandidat.Adresa</dd>
             <dt>Kontakt</dt><dd>@Model.Kandidat.KontaktTelefon / @Model.Kandidat.Email</dd>
         </dl>
-    </div>
-    <div class="col-md-6">
-        <h3>Članstvo</h3>
+    </section>
+    <section class="surface detail-card">
+        <h3>Podaci o članstvu</h3>
         <dl class="dl-horizontal">
             <dt>Disciplina</dt><dd>@Model.SportskaDisciplina.Sifra - @Model.SportskaDisciplina.Naziv</dd>
             <dt>Datum podnošenja</dt><dd>@Model.DatumPodnosenja.ToString("dd.MM.yyyy")</dd>
@@ -28,24 +38,38 @@
             <dt>Status</dt><dd><strong>@Model.StatusZahteva</strong></dd>
             <dt>Napomena</dt><dd>@Model.Napomena</dd>
         </dl>
-    </div>
+    </section>
 </div>
-<h3>Dokumentacija</h3>
-<table class="table table-bordered"><tr><th>Dokument</th><th>Dostavljeno</th></tr>
-@foreach (var d in Model.Dokumentacija.OrderBy(d => d.IDDokumentacije)) { <tr><td>@d.NazivDokumenta</td><td>@(d.Dostavljeno ? "Da" : "Ne")</td></tr> }
-</table>
+
+<section class="surface section-card" style="margin-top:20px">
+    <h3>Dokumentacija</h3>
+    <div class="table-responsive">
+        <table class="table data-table"><thead><tr><th>Dokument</th><th>Dostavljeno</th></tr></thead><tbody>
+        @foreach (var d in Model.Dokumentacija.OrderBy(d => d.IDDokumentacije)) { <tr><td>@d.NazivDokumenta</td><td>@(d.Dostavljeno ? "Da" : "Ne")</td></tr> }
+        </tbody></table>
+    </div>
+</section>
+
 @if (Model.RoditeljiStaratelji.Any())
 {
     var r = Model.RoditeljiStaratelji.First();
-    <h3>Roditelj/staratelj</h3>
-    <p>@r.ImePrezime, JMBG @r.JMBG, @r.Srodstvo, @r.KontaktTelefon, @r.Email</p>
+    <section class="surface section-card">
+        <h3>Roditelj/staratelj</h3>
+        <p>@r.ImePrezime, JMBG @r.JMBG, @r.Srodstvo, @r.KontaktTelefon, @r.Email</p>
+    </section>
 }
-<h3>Istorija statusa</h3>
-<table class="table table-condensed"><tr><th>Datum</th><th>Promena</th><th>Korisnik</th><th>Napomena</th></tr>
-@foreach (var i in Model.IstorijaStatusa.OrderByDescending(i => i.DatumPromene)) { <tr><td>@i.DatumPromene.ToString("dd.MM.yyyy HH:mm")</td><td>@(i.StariStatus ?? "-") → @i.NoviStatus</td><td>@i.KorisnickoIme</td><td>@i.Napomena</td></tr> }
-</table>
-<div class="no-print">
-    @using (Html.BeginForm("Odobri", "ZahtevZaUclanjenje", new { id = Model.IDZahteva }, FormMethod.Post, new { style = "display:inline" })) { @Html.AntiForgeryToken()<button class="btn btn-success" type="submit">Proveri pravilo i odobri</button> }
+
+<section class="surface section-card">
+    <h3>Istorija statusa</h3>
+    <div class="table-responsive">
+        <table class="table data-table"><thead><tr><th>Datum</th><th>Promena</th><th>Korisnik</th><th>Napomena</th></tr></thead><tbody>
+        @foreach (var i in Model.IstorijaStatusa.OrderByDescending(i => i.DatumPromene)) { <tr><td>@i.DatumPromene.ToString("dd.MM.yyyy HH:mm")</td><td>@(i.StariStatus ?? "-") → @i.NoviStatus</td><td>@i.KorisnickoIme</td><td>@i.Napomena</td></tr> }
+        </tbody></table>
+    </div>
+</section>
+
+<div class="form-actions no-print">
+    @using (Html.BeginForm("Odobri", "ZahtevZaUclanjenje", new { id = Model.IDZahteva }, FormMethod.Post, new { style = "display:inline" })) { @Html.AntiForgeryToken()<button class="btn btn-accent" type="submit">Proveri pravilo i odobri</button> }
     @Html.ActionLink("Izmeni", "Izmeni", new { id = Model.IDZahteva }, new { @class = "btn btn-primary" })
     @Html.ActionLink("Štampa dokumenta", "StampaZahteva", new { id = Model.IDZahteva }, new { @class = "btn btn-default", target = "_blank" })
     @if (Session["Uloga"] != null && Session["Uloga"].ToString() == "Administrator") { @Html.ActionLink("Obriši", "Obrisi", new { id = Model.IDZahteva }, new { @class = "btn btn-danger" }) }

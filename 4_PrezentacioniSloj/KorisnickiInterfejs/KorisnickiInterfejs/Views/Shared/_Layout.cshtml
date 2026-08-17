@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="sr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,46 +8,54 @@
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
-    <div class="navbar navbar-default navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                @Html.ActionLink("Sportski klub", "Spisak", "ZahtevZaUclanjenje", null, new { @class = "navbar-brand" })
-            </div>
+    <div class="app-shell">
+        <aside class="app-sidebar no-print">
+            <a class="app-brand" href="@Url.Action("Spisak", "ZahtevZaUclanjenje")">
+                <span class="brand-mark">SK</span>
+                <span class="brand-copy">
+                    <strong>Sportski klub</strong>
+                    <small>Evidencija članstva</small>
+                </span>
+            </a>
+            <ul class="app-nav">
+                <li><a class="nav-primary" href="@Url.Action("Dodaj", "ZahtevZaUclanjenje")"><span class="nav-symbol glyphicon glyphicon-plus"></span>Novi zahtev</a></li>
+                <li><a href="@Url.Action("Spisak", "ZahtevZaUclanjenje")"><span class="nav-symbol glyphicon glyphicon-list-alt"></span>Zahtevi</a></li>
+                <li>
+                    <a href="@(System.Configuration.ConfigurationManager.AppSettings["RestServisOsnovnaAdresa"] + "api/zahtevi")" target="_blank">
+                        <span class="nav-symbol glyphicon glyphicon-transfer"></span>REST API
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-note">Evidencija učlanjivanja kandidata u sportski klub</div>
+        </aside>
 
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Zahtevi", "Spisak", "ZahtevZaUclanjenje")</li>
-                    <li>@Html.ActionLink("Novi zahtev", "Dodaj", "ZahtevZaUclanjenje")</li>
-                    <li>
-                        <a href="@(System.Configuration.ConfigurationManager.AppSettings["RestServisOsnovnaAdresa"] + "api/zahtevi")"
-                           target="_blank"
-                           class="btn btn-default">
-                            REST API
-                        </a>
-                    </li>
-                </ul>
-
-                <ul class="nav navbar-nav navbar-right">
+        <main class="app-main">
+            <header class="app-topbar no-print clearfix">
+                <div class="topbar-context">
+                    <span class="eyebrow">Informacioni sistem</span>
+                    <span class="context-title">@ViewBag.Title</span>
+                </div>
+                <div class="topbar-user">
                     @if (Session["IDKorisnika"] != null)
                     {
-                        <li><a href="#">@Session["Ime"] @Session["Prezime"] (@Session["Uloga"])</a></li>
-                        <li>@Html.ActionLink("Odjava", "Odjava", "Nalog")</li>
+                        <span class="user-name">@Session["Ime"] @Session["Prezime"]</span>
+                        <span class="user-role">@Session["Uloga"] · @Html.ActionLink("Odjava", "Odjava", "Nalog")</span>
                     }
                     else
                     {
-                        <li>@Html.ActionLink("Prijava", "Prijava", "Nalog")</li>
+                        <span class="user-name">Gost</span>
+                        <span class="user-role">@Html.ActionLink("Prijava", "Prijava", "Nalog")</span>
                     }
-                </ul>
-            </div>
-        </div>
-    </div>
+                </div>
+            </header>
 
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - Evidencija učlanjivanja kandidata u sportski klub</p>
-        </footer>
+            <div class="body-content">
+                @RenderBody()
+            </div>
+            <footer class="app-footer no-print">
+                &copy; @DateTime.Now.Year · Evidencija učlanjivanja kandidata u sportski klub
+            </footer>
+        </main>
     </div>
 
     @Scripts.Render("~/bundles/jquery")

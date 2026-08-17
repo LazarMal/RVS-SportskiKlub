@@ -1,12 +1,98 @@
 @model KlasePodataka.ZahtevZaUclanjenje
-@{ Layout = null; var roditelj = Model.RoditeljiStaratelji.FirstOrDefault(); }
-<!doctype html><html><head><meta charset="utf-8" /><title>@Model.BrojZahteva</title><style>body{font-family:Arial;margin:24px;color:#111}.document{max-width:850px;margin:auto;border:2px solid #222;padding:24px}h1{text-align:center;font-size:23px}h2{font-size:17px;border-bottom:1px solid #333;padding-bottom:4px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:7px 25px}.field{border-bottom:1px dotted #888;padding:4px}.label{font-size:11px;color:#555;display:block}.docs{width:100%;border-collapse:collapse}.docs td,.docs th{border:1px solid #555;padding:5px}.signatures{display:flex;justify-content:space-between;margin-top:55px}.actions{margin-bottom:16px}@@media print{.actions{display:none}.document{border:0;padding:0}}</style></head><body>
-<div class="actions"><button onclick="window.print()">Štampaj zahtev</button></div><div class="document">
-<h1>ZAHTEV ZA UČLANJENJE U SPORTSKI KLUB</h1>
-<div class="grid"><div class="field"><span class="label">Broj zahteva</span>@Model.BrojZahteva</div><div class="field"><span class="label">Datum i mesto</span>@Model.DatumPodnosenja.ToString("dd.MM.yyyy"), @Model.MestoKluba</div><div class="field"><span class="label">Sezona</span>@Model.Sezona</div><div class="field"><span class="label">Status</span>@Model.StatusZahteva</div></div>
-<h2>Podaci o kandidatu</h2><div class="grid"><div class="field"><span class="label">Ime i prezime</span>@Model.Kandidat.Ime @Model.Kandidat.Prezime</div><div class="field"><span class="label">JMBG</span>@Model.Kandidat.JMBG</div><div class="field"><span class="label">Datum rođenja / pol</span>@Model.Kandidat.DatumRodjenja.ToString("dd.MM.yyyy") / @Model.Kandidat.Pol</div><div class="field"><span class="label">Državljanstvo</span>@Model.Kandidat.Drzavljanstvo</div><div class="field"><span class="label">Adresa</span>@Model.Kandidat.Adresa</div><div class="field"><span class="label">Telefon / email</span>@Model.Kandidat.KontaktTelefon / @Model.Kandidat.Email</div></div>
-<h2>Sportski podaci</h2><div class="grid"><div class="field"><span class="label">Disciplina</span>@Model.SportskaDisciplina.Naziv</div><div class="field"><span class="label">Datum sportskog pregleda</span>@Model.DatumSportskogPregleda.ToString("dd.MM.yyyy")</div><div class="field"><span class="label">Rezultat testa sposobnosti</span>@Model.RezultatTestaSposobnosti</div><div class="field"><span class="label">Napomena</span>@Model.Napomena</div></div>
-<h2>Priložena dokumentacija</h2><table class="docs"><tr><th>Dokument</th><th>Dostavljeno</th></tr>@foreach (var d in Model.Dokumentacija.OrderBy(d => d.IDDokumentacije)) { <tr><td>@d.NazivDokumenta</td><td>@(d.Dostavljeno ? "DA" : "NE")</td></tr> }</table>
-@if (roditelj != null) { <h2>Roditelj/staratelj</h2><div class="grid"><div class="field"><span class="label">Ime i prezime</span>@roditelj.ImePrezime</div><div class="field"><span class="label">JMBG</span>@roditelj.JMBG</div><div class="field"><span class="label">Srodstvo</span>@roditelj.Srodstvo</div><div class="field"><span class="label">Kontakt</span>@roditelj.KontaktTelefon / @roditelj.Email</div></div> }
-<div class="signatures"><span>____________________<br />Potpis kandidata/staratelja</span><span>____________________<br />Ovlašćeno lice kluba</span></div>
-</div></body></html>
+@{ Layout = null; var roditelj = Model.RoditeljiStaratelji.FirstOrDefault(); var redniBroj = 0; }
+<!doctype html>
+<html lang="sr">
+<head>
+    <meta charset="utf-8" />
+    <title>@Model.BrojZahteva</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #e8eae8; color: #111; font: 11px "Times New Roman", serif; }
+        .actions { width: 210mm; margin: 12px auto 8px; font-family: Arial, sans-serif; }
+        .actions button { padding: 8px 15px; border: 1px solid #222; background: #fff; cursor: pointer; font-weight: bold; }
+        .document { width: 210mm; min-height: 297mm; margin: 0 auto 18px; padding: 10mm 11mm; background: #fff; box-shadow: 0 4px 18px rgba(0,0,0,.13); }
+        .club { margin: 0; font-size: 17px; font-weight: bold; text-align: center; text-transform: uppercase; }
+        .city { margin: 1mm 0 2mm; font-size: 11px; text-align: center; }
+        h1 { margin: 0 0 5mm; font-size: 17px; text-align: center; text-transform: uppercase; }
+        h2 { margin: 4mm 1.5mm 1.5mm; font-size: 12px; text-transform: uppercase; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        th, td { padding: 1.7mm 2mm; border: 1px solid #333; vertical-align: middle; }
+        th { background: #ededed; text-align: left; }
+        .label { width: 19%; font-weight: bold; }
+        .value { width: 31%; }
+        .docs .number { width: 9%; text-align: center; }
+        .docs .answer { width: 22%; text-align: center; font-weight: bold; }
+        .docs thead th { background: #dfe1e0; text-align: center; }
+        .note { min-height: 10mm; padding: 2mm; border: 1px solid #333; white-space: pre-wrap; }
+        .signatures th { background: #dfe1e0; text-align: center; }
+        .signatures td { height: 17mm; padding: 4mm 3mm 2mm; vertical-align: bottom; }
+        .line { display: inline-block; min-width: 27mm; border-bottom: 1px solid #222; }
+        .footer-note { margin-top: 7mm; color: #444; font-size: 9px; text-align: center; }
+        @@page { size: A4 portrait; margin: 0; }
+        @@media print {
+            body { background: #fff; }
+            .actions { display: none; }
+            .document { width: auto; min-height: 0; margin: 0; box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="actions"><button type="button" onclick="window.print()">Štampaj zahtev</button></div>
+    <article class="document">
+        <p class="club">SPORTSKI KLUB „MLADOST“</p>
+        <p class="city">Zrenjanin</p>
+        <h1>Zahtev za učlanjenje u sportski klub</h1>
+
+        <table>
+            <tr><th class="label">Broj zahteva</th><td class="value">@Model.BrojZahteva</td><th class="label">Datum podnošenja</th><td class="value">@Model.DatumPodnosenja.ToString("dd.MM.yyyy")</td></tr>
+            <tr><th>Sezona</th><td>@Model.Sezona</td><th>Mesto kluba</th><td>@Model.MestoKluba</td></tr>
+        </table>
+
+        <h2>Podaci o kandidatu</h2>
+        <table>
+            <tr><th class="label">Ime</th><td class="value">@Model.Kandidat.Ime</td><th class="label">Prezime</th><td class="value">@Model.Kandidat.Prezime</td></tr>
+            <tr><th>JMBG</th><td>@Model.Kandidat.JMBG</td><th>Datum rođenja</th><td>@Model.Kandidat.DatumRodjenja.ToString("dd.MM.yyyy")</td></tr>
+            <tr><th>Pol</th><td>@Model.Kandidat.Pol</td><th>Državljanstvo</th><td>@Model.Kandidat.Drzavljanstvo</td></tr>
+            <tr><th>Adresa / kontakt</th><td>@Model.Kandidat.Adresa / @Model.Kandidat.KontaktTelefon</td><th>E-mail</th><td>@Model.Kandidat.Email</td></tr>
+        </table>
+
+        <h2>Podaci relevantni za učlanjenje</h2>
+        <table>
+            <tr><th class="label">Sportska disciplina</th><td colspan="3">@Model.SportskaDisciplina.Naziv</td></tr>
+            <tr><th>Datum sportskog pregleda</th><td colspan="3">@Model.DatumSportskogPregleda.ToString("dd.MM.yyyy")</td></tr>
+            <tr><th>Test sposobnosti</th><td colspan="3">@Model.RezultatTestaSposobnosti</td></tr>
+            <tr><th>Status zahteva</th><td colspan="3">@Model.StatusZahteva</td></tr>
+            <tr><th>Napomena</th><td colspan="3">@Model.Napomena</td></tr>
+        </table>
+
+        <h2>Priložena dokumentacija</h2>
+        <table class="docs">
+            <thead><tr><th class="number">R.br.</th><th>Dokument</th><th class="answer">Dostavljeno</th></tr></thead>
+            <tbody>
+            @foreach (var d in Model.Dokumentacija.OrderBy(d => d.IDDokumentacije))
+            {
+                redniBroj++;
+                <tr><td class="number">@redniBroj</td><td>@d.NazivDokumenta</td><td class="answer">@(d.Dostavljeno ? "DA" : "NE")</td></tr>
+            }
+            </tbody>
+        </table>
+
+        <h2>Roditelj / staratelj – samo za maloletnog kandidata</h2>
+        <table>
+            <tr><th class="label">Ime i prezime</th><td class="value">@(roditelj != null ? roditelj.ImePrezime : "—")</td><th class="label">JMBG</th><td class="value">@(roditelj != null ? roditelj.JMBG : "—")</td></tr>
+            <tr><th>Srodstvo</th><td>@(roditelj != null ? roditelj.Srodstvo : "—")</td><th>Telefon / e-mail</th><td>@(roditelj != null ? roditelj.KontaktTelefon + " / " + roditelj.Email : "—")</td></tr>
+        </table>
+
+        <h2>Odluka i potpisi</h2>
+        <table class="signatures">
+            <thead><tr><th>Kandidat</th><th>Roditelj / staratelj</th><th>Ovlašćeno lice kluba</th></tr></thead>
+            <tbody><tr>
+                <td>Potpis: <span class="line"></span></td>
+                <td>Potpis: <span class="line"></span></td>
+                <td>Potpis: <span class="line"></span></td>
+            </tr></tbody>
+        </table>
+        <div class="footer-note">Parametarska štampa · podaci se popunjavaju iz izabranog zahteva</div>
+    </article>
+</body>
+</html>
