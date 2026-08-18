@@ -193,10 +193,12 @@ async function createThroughMvc(page, iteration) {
   const api = await request.newContext({ baseURL: restBase, ignoreHTTPSErrors: true });
 
   try {
-    const protectedResponse = await page.goto(`${mvcBase}/ZahtevZaUclanjenje/Spisak`, { waitUntil: "networkidle" });
-    assert(protectedResponse.ok(), "Zaštićena ruta nije odgovorila.");
-    assert(page.url().includes("/Nalog/Prijava"), "Ruta bez sesije nije preusmerila na prijavu.");
-    pass("zaštita rute bez sesije");
+    for (let i = 1; i <= 10; i++) {
+      const protectedResponse = await page.goto(`${mvcBase}/ZahtevZaUclanjenje/Spisak`, { waitUntil: "networkidle" });
+      assert(protectedResponse.ok(), `Zaštićena ruta nije odgovorila u krugu ${i}.`);
+      assert(page.url().includes("/Nalog/Prijava"), `Ruta bez sesije nije preusmerila na prijavu u krugu ${i}.`);
+    }
+    pass("zaštita rute bez sesije", 10);
 
     for (let i = 1; i <= 10; i++) {
       await login(page, adminUser, `namerno-pogresno-${i}`);
@@ -204,9 +206,13 @@ async function createThroughMvc(page, iteration) {
     }
     pass("pogrešan login", 10);
 
+    for (let i = 1; i <= 10; i++) {
+      await login(page, referentUser, referentPassword);
+      assert(page.url().includes("/ZahtevZaUclanjenje/Spisak"), `Referent login nije uspeo u krugu ${i}.`);
+      await logout(page);
+    }
+    pass("uspešan login preko Stored Procedure", 10);
     await login(page, referentUser, referentPassword);
-    assert(page.url().includes("/ZahtevZaUclanjenje/Spisak"), "Referent login nije uspeo.");
-    pass("uspešan login preko Stored Procedure");
 
     for (let i = 1; i <= 10; i++) {
       const created = await createThroughMvc(page, i);
@@ -262,13 +268,17 @@ async function createThroughMvc(page, iteration) {
     pass("MVC create/detail/business/edit/filter/tri štampe", 10);
     pass("referent ne može da briše", 10);
 
-    const allPrint = await context.newPage();
-    await allPrint.goto(`${mvcBase}/ZahtevZaUclanjenje/StampaSvih`, { waitUntil: "networkidle" });
-    assert((await allPrint.locator("body").innerText()).includes("Spisak svih zahteva za učlanjenje"), "Štampa svih nema očekivani naslov.");
-    await allPrint.screenshot({ path: path.join(resultsDirectory, "stampa-svih.png"), fullPage: true });
-    await allPrint.pdf({ path: path.join(resultsDirectory, "stampa-svih.pdf"), preferCSSPageSize: true, printBackground: true });
-    await allPrint.close();
-    pass("štampa svih zahteva");
+    for (let i = 1; i <= 10; i++) {
+      const allPrint = await context.newPage();
+      await allPrint.goto(`${mvcBase}/ZahtevZaUclanjenje/StampaSvih`, { waitUntil: "networkidle" });
+      assert((await allPrint.locator("body").innerText()).includes("Spisak svih zahteva za učlanjenje"), `Štampa svih nema očekivani naslov u krugu ${i}.`);
+      if (i === 1) {
+        await allPrint.screenshot({ path: path.join(resultsDirectory, "stampa-svih.png"), fullPage: true });
+        await allPrint.pdf({ path: path.join(resultsDirectory, "stampa-svih.pdf"), preferCSSPageSize: true, printBackground: true });
+      }
+      await allPrint.close();
+    }
+    pass("štampa svih zahteva", 10);
 
     const businessCases = [
       { name: "validan", date: isoDate(addMonths(-1)), result: "Položen", expected: true },
@@ -328,10 +338,15 @@ async function createThroughMvc(page, iteration) {
     }
     pass("administratorsko MVC brisanje", 10);
 
-    await logout(page);
-    await page.goto(`${mvcBase}/ZahtevZaUclanjenje/Spisak`, { waitUntil: "networkidle" });
-    assert(page.url().includes("/Nalog/Prijava"), "Logout nije uklonio sesiju.");
-    pass("logout i ponovno zaključavanje sesije");
+    for (let i = 1; i <= 10; i++) {
+      await logout(page);
+      await page.goto(`${mvcBase}/ZahtevZaUclanjenje/Spisak`, { waitUntil: "networkidle" });
+      assert(page.url().includes("/Nalog/Prijava"), `Logout nije uklonio sesiju u krugu ${i}.`);
+      if (i < 10) {
+        await login(page, adminUser, adminPassword);
+      }
+    }
+    pass("logout i ponovno zaključavanje sesije", 10);
 
     report.finishedAt = new Date().toISOString();
     fs.writeFileSync(path.join(resultsDirectory, "ui-e2e-report.json"), JSON.stringify(report, null, 2), "utf8");
