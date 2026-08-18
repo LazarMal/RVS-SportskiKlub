@@ -25,9 +25,13 @@ $restProcess = $null
 $mvcProcess = $null
 
 function Wait-Url {
-    param([string]$Url, [string]$Name)
+    param([string]$Url, [string]$Name, [System.Diagnostics.Process]$Process)
     $lastResponse = $null
     for ($attempt = 1; $attempt -le 90; $attempt++) {
+        $Process.Refresh()
+        if ($Process.HasExited) {
+            throw "$Name proces se prerano završio (exit code $($Process.ExitCode)): $Url"
+        }
         try {
             $response = Invoke-WebRequest -Uri $Url -UseBasicParsing -SkipHttpErrorCheck -TimeoutSec 3
             $lastResponse = $response
@@ -56,12 +60,12 @@ try {
     $restProcess = Start-Process -FilePath $iisExpress `
         -ArgumentList @("/path:$restProject", "/port:44346", "/systray:false") `
         -RedirectStandardOutput $restLog -RedirectStandardError $restErrorLog -PassThru
+    Wait-Url "http://localhost:44346/api/parametri/poslovna-pravila" "REST servis" $restProcess
+
     $mvcProcess = Start-Process -FilePath $iisExpress `
         -ArgumentList @("/path:$mvcProject", "/port:44334", "/systray:false") `
         -RedirectStandardOutput $mvcLog -RedirectStandardError $mvcErrorLog -PassThru
-
-    Wait-Url "http://localhost:44346/api/parametri/poslovna-pravila" "REST servis"
-    Wait-Url "http://localhost:44334/Nalog/Prijava" "MVC aplikacija"
+    Wait-Url "http://localhost:44334/Nalog/Prijava" "MVC aplikacija" $mvcProcess
 
     & (Join-Path $PSScriptRoot "Test-RestApi.ps1") `
         -RestBaseUrl "http://localhost:44346" `
