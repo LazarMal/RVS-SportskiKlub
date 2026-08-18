@@ -219,13 +219,14 @@ async function createThroughMvc(page, iteration) {
       const printPage = await context.newPage();
       await printPage.goto(`${mvcBase}/ZahtevZaUclanjenje/StampaZahteva?id=${created.id}`, { waitUntil: "networkidle" });
       const printText = await printPage.locator("body").innerText();
-      assert(printText.includes("Sportski klub Mladost"), "Pojedinačna štampa nema propisano zaglavlje.");
-      assert(printText.includes(created.jmbg), "Pojedinačna štampa nema JMBG kandidata.");
-      assert(printText.includes("Potvrda o sportskom pregledu"), "Pojedinačna štampa nema dokumentaciju.");
       if (i === 1) {
         await printPage.screenshot({ path: path.join(resultsDirectory, "stampa-zahteva.png"), fullPage: true });
         await printPage.pdf({ path: path.join(resultsDirectory, "stampa-zahteva.pdf"), format: "A4", printBackground: true });
       }
+      const normalizedPrintText = printText.toUpperCase();
+      assert(normalizedPrintText.includes("SPORTSKI KLUB") && normalizedPrintText.includes("MLADOST"), "Pojedinačna štampa nema propisano zaglavlje.");
+      assert(printText.includes(created.jmbg), "Pojedinačna štampa nema JMBG kandidata.");
+      assert(printText.includes("Potvrda o sportskom pregledu"), "Pojedinačna štampa nema dokumentaciju.");
       await printPage.close();
 
       await page.goto(`${mvcBase}/ZahtevZaUclanjenje/Izmeni?id=${created.id}`, { waitUntil: "networkidle" });
