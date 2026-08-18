@@ -130,14 +130,15 @@ for ($i = 1; $i -le 10; $i++) {
     Assert-Equal $get.JMBG $payload.JMBG "REST GET po ID-u nije vratio kreirani zahtev."
 
     $filter = [uri]::EscapeDataString($payload.Prezime)
-    $filtered = @(Invoke-RestMethod -Uri "$RestBaseUrl/api/zahtevi?filter=$filter" -Method Get)
-    $matching = @($filtered | Where-Object {
-        $null -ne $_ -and
-        $_.PSObject.Properties.Name -contains "IDZahteva" -and
-        [int]$_.IDZahteva -eq [int]$created.IDZahteva
-    })
+    $filtered = Invoke-RestMethod -Uri "$RestBaseUrl/api/zahtevi?filter=$filter" -Method Get
+    $matchingCount = 0
+    foreach ($item in $filtered) {
+        if ($null -ne $item -and [int]$item.IDZahteva -eq [int]$created.IDZahteva) {
+            $matchingCount++
+        }
+    }
     $filteredJson = $filtered | ConvertTo-Json -Depth 4 -Compress
-    Assert-True ($matching.Count -eq 1) "REST filter nije našao tačan zahtev. Odgovor: $filteredJson"
+    Assert-True ($matchingCount -eq 1) "REST filter nije našao tačan zahtev. Odgovor: $filteredJson"
 
     $created.Prezime = "Izmenjen$i"
     $created.StatusZahteva = "Na proveri"
