@@ -63,7 +63,7 @@ jobs:
             ".\5_Testovi\PoslovnaLogikaTestovi\bin\Debug\PoslovnaLogikaTestovi.exe",
             ".\3_SlojServisa\RESTApi\RESTServis\RESTServis\bin\RESTServis.dll",
             ".\3_SlojServisa\RESTApi\RESTServis\RESTServis\bin\roslyn\csc.exe",
-            ".\4_PrezentacioniSloj\KorisnickiInterfejs\KorisnickiInterfejs\bin\KorisnickiInterfejs.dll",
+            ".\4_PrezentacioniSloj\KorisnickiInterfejs\KorisnickiInterfejs\bin\SportskiKlub.dll",
             ".\4_PrezentacioniSloj\KorisnickiInterfejs\KorisnickiInterfejs\bin\roslyn\csc.exe"
           )
           foreach ($file in $required) {
