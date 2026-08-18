@@ -131,7 +131,13 @@ for ($i = 1; $i -le 10; $i++) {
 
     $filter = [uri]::EscapeDataString($payload.Prezime)
     $filtered = @(Invoke-RestMethod -Uri "$RestBaseUrl/api/zahtevi?filter=$filter" -Method Get)
-    Assert-True (($filtered | Where-Object IDZahteva -eq $created.IDZahteva).Count -eq 1) "REST filter nije našao tačan zahtev."
+    $matching = @($filtered | Where-Object {
+        $null -ne $_ -and
+        $_.PSObject.Properties.Name -contains "IDZahteva" -and
+        [int]$_.IDZahteva -eq [int]$created.IDZahteva
+    })
+    $filteredJson = $filtered | ConvertTo-Json -Depth 4 -Compress
+    Assert-True ($matching.Count -eq 1) "REST filter nije našao tačan zahtev. Odgovor: $filteredJson"
 
     $created.Prezime = "Izmenjen$i"
     $created.StatusZahteva = "Na proveri"
