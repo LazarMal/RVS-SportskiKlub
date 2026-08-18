@@ -26,9 +26,11 @@ $mvcProcess = $null
 
 function Wait-Url {
     param([string]$Url, [string]$Name)
+    $lastResponse = $null
     for ($attempt = 1; $attempt -le 90; $attempt++) {
         try {
             $response = Invoke-WebRequest -Uri $Url -UseBasicParsing -SkipHttpErrorCheck -TimeoutSec 3
+            $lastResponse = $response
             if ([int]$response.StatusCode -lt 500) {
                 Write-Host "$Name je spreman: $Url (HTTP $($response.StatusCode))."
                 return
@@ -40,11 +42,14 @@ function Wait-Url {
         }
         Start-Sleep -Milliseconds 700
     }
+    if ($null -ne $lastResponse) {
+        $lastResponse.Content | Set-Content -LiteralPath (Join-Path $ResultsDirectory "startup-failure.html") -Encoding UTF8
+    }
     throw "$Name nije postao dostupan: $Url"
 }
 
 try {
-    $webConfigText = [System.Text.Encoding]::UTF8.GetString($originalWebConfig)
+    $webConfigText = [System.Text.Encoding]::UTF8.GetString($originalWebConfig).TrimStart([char]0xFEFF)
     $webConfigText = $webConfigText.Replace("https://localhost:44346/", "http://localhost:44346/")
     [System.IO.File]::WriteAllText($mvcWebConfig, $webConfigText, [System.Text.UTF8Encoding]::new($true))
 

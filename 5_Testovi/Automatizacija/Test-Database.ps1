@@ -69,6 +69,8 @@ $env:RVS_E2E_ADMIN_PASSWORD = $adminPassword
 $env:RVS_E2E_REFERENT_USER = $referentUser
 $env:RVS_E2E_REFERENT_PASSWORD = $referentPassword
 if ($env:GITHUB_ENV) {
+    Write-Host "::add-mask::$adminPassword"
+    Write-Host "::add-mask::$referentPassword"
     "RVS_E2E_ADMIN_USER=$adminUser" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
     "RVS_E2E_ADMIN_PASSWORD=$adminPassword" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
     "RVS_E2E_REFERENT_USER=$referentUser" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
