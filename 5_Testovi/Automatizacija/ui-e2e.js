@@ -251,6 +251,10 @@ async function createThroughMvc(page, iteration) {
       await filteredPrint.goto(`${mvcBase}/ZahtevZaUclanjenje/StampaFiltriranih?pretraga=${encodeURIComponent(created.surname)}`, { waitUntil: "networkidle" });
       const filteredText = await filteredPrint.locator("body").innerText();
       assert(filteredText.includes(created.surname), "Filtrirana štampa nema očekivani zahtev.");
+      if (i === 1) {
+        await filteredPrint.screenshot({ path: path.join(resultsDirectory, "stampa-filtriranih.png"), fullPage: true });
+        await filteredPrint.pdf({ path: path.join(resultsDirectory, "stampa-filtriranih.pdf"), preferCSSPageSize: true, printBackground: true });
+      }
       await filteredPrint.close();
 
       await apiDelete(api, created.id);
@@ -262,6 +266,7 @@ async function createThroughMvc(page, iteration) {
     await allPrint.goto(`${mvcBase}/ZahtevZaUclanjenje/StampaSvih`, { waitUntil: "networkidle" });
     assert((await allPrint.locator("body").innerText()).includes("Spisak svih zahteva za učlanjenje"), "Štampa svih nema očekivani naslov.");
     await allPrint.screenshot({ path: path.join(resultsDirectory, "stampa-svih.png"), fullPage: true });
+    await allPrint.pdf({ path: path.join(resultsDirectory, "stampa-svih.pdf"), preferCSSPageSize: true, printBackground: true });
     await allPrint.close();
     pass("štampa svih zahteva");
 
