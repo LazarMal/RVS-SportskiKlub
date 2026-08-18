@@ -16,6 +16,10 @@ const report = { startedAt: new Date().toISOString(), passed: [], counts: {} };
 fs.mkdirSync(resultsDirectory, { recursive: true });
 assert(adminUser && adminPassword && referentUser && referentPassword, "Nedostaju privremeni RVS_E2E nalozi iz database testa.");
 
+async function capture(page, fileName) {
+  await page.screenshot({ path: path.join(resultsDirectory, fileName), fullPage: true });
+}
+
 function pass(name, count = 1) {
   report.passed.push(name);
   report.counts[name] = (report.counts[name] || 0) + count;
@@ -150,6 +154,12 @@ async function createThroughMvc(page, iteration) {
   const jmbg = String(8700000000000 + iteration);
   const surname = `MVC${iteration}`;
   await page.goto(`${mvcBase}/ZahtevZaUclanjenje/Dodaj`, { waitUntil: "networkidle" });
+  if (iteration === 1) {
+    await capture(page, "forma-unos.png");
+    await page.getByRole("button", { name: "Sačuvaj zahtev i detalje" }).click();
+    await page.waitForTimeout(250);
+    await capture(page, "validacije-unosa.png");
+  }
   const options = await page.locator("#IDSportskeDiscipline option").count();
   assert(options === 7, `Dropdown mora imati placeholder i šest disciplina; ima ${options}.`);
 
@@ -170,6 +180,7 @@ async function createThroughMvc(page, iteration) {
   await page.fill("#Napomena", `MVC E2E krug ${iteration}`);
   await page.locator('label:has-text("Potvrda o sportskom pregledu") input[type="checkbox"]').check();
   await page.locator('label:has-text("Evidencija o položenom testu sposobnosti") input[type="checkbox"]').check();
+  if (iteration === 1) await capture(page, "forma-unos-popunjena.png");
 
   await Promise.all([
     page.waitForLoadState("networkidle"),
@@ -197,12 +208,17 @@ async function createThroughMvc(page, iteration) {
       const protectedResponse = await page.goto(`${mvcBase}/ZahtevZaUclanjenje/Spisak`, { waitUntil: "networkidle" });
       assert(protectedResponse.ok(), `Zaštićena ruta nije odgovorila u krugu ${i}.`);
       assert(page.url().includes("/Nalog/Prijava"), `Ruta bez sesije nije preusmerila na prijavu u krugu ${i}.`);
+      if (i === 1) await capture(page, "login.png");
     }
     pass("zaštita rute bez sesije", 10);
 
     for (let i = 1; i <= 10; i++) {
       await login(page, adminUser, `namerno-pogresno-${i}`);
       assert((await page.locator("body").innerText()).includes("Pogrešno korisničko ime ili lozinka"), `Pogrešan login nije odbijen u krugu ${i}.`);
+      if (i === 1) {
+        await page.fill("#Sifra", "");
+        await capture(page, "login-neuspesan.png");
+      }
     }
     pass("pogrešan login", 10);
 
@@ -213,6 +229,12 @@ async function createThroughMvc(page, iteration) {
     }
     pass("uspešan login preko Stored Procedure", 10);
     await login(page, referentUser, referentPassword);
+    await capture(page, "spisak-zahteva.png");
+
+    const restParameterPage = await context.newPage();
+    await restParameterPage.goto(`${restBase}/api/parametri/poslovna-pravila`, { waitUntil: "networkidle" });
+    await capture(restParameterPage, "rest-parametri-json.png");
+    await restParameterPage.close();
 
     for (let i = 1; i <= 10; i++) {
       const created = await createThroughMvc(page, i);
@@ -221,6 +243,7 @@ async function createThroughMvc(page, iteration) {
 
       await page.goto(`${mvcBase}/ZahtevZaUclanjenje/Detalji?id=${created.id}`, { waitUntil: "networkidle" });
       await approveAndCheck(page, created.id, true);
+      if (i === 1) await capture(page, "detalji-odobren.png");
 
       const printPage = await context.newPage();
       await printPage.goto(`${mvcBase}/ZahtevZaUclanjenje/StampaZahteva?id=${created.id}`, { waitUntil: "networkidle" });
@@ -236,6 +259,7 @@ async function createThroughMvc(page, iteration) {
       await printPage.close();
 
       await page.goto(`${mvcBase}/ZahtevZaUclanjenje/Izmeni?id=${created.id}`, { waitUntil: "networkidle" });
+      if (i === 1) await capture(page, "izmena-zahteva.png");
       await page.fill("#KontaktTelefon", `06466${String(i).padStart(4, "0")}`);
       await page.fill("#Napomena", `Izmenjeno kroz browser ${i}`);
       await Promise.all([
@@ -252,6 +276,7 @@ async function createThroughMvc(page, iteration) {
       ]);
       const rows = await page.locator("table.data-table tbody tr").count();
       assert(rows === 1, `Filter nije vratio tačno jedan red u krugu ${i}; vratio je ${rows}.`);
+      if (i === 1) await capture(page, "filtriranje-zahteva.png");
 
       const filteredPrint = await context.newPage();
       await filteredPrint.goto(`${mvcBase}/ZahtevZaUclanjenje/StampaFiltriranih?pretraga=${encodeURIComponent(created.surname)}`, { waitUntil: "networkidle" });
@@ -298,6 +323,7 @@ async function createThroughMvc(page, iteration) {
           Prezime: `Pravilo${round}_${index}`
         }));
         await approveAndCheck(page, created.IDZahteva, scenario.expected);
+        if (round === 1 && index === 1) await capture(page, "poslovno-pravilo-odbijeno.png");
         await apiDelete(api, created.IDZahteva);
       }
     }
@@ -329,6 +355,7 @@ async function createThroughMvc(page, iteration) {
     for (let i = 1; i <= 10; i++) {
       const created = await apiCreate(api, payload(8950000000000 + i, { Prezime: `AdminBrisanje${i}` }));
       await page.goto(`${mvcBase}/ZahtevZaUclanjenje/Obrisi?id=${created.IDZahteva}`, { waitUntil: "networkidle" });
+      if (i === 1) await capture(page, "brisanje-administrator.png");
       await Promise.all([
         page.waitForLoadState("networkidle"),
         page.getByRole("button", { name: "Potvrdi brisanje" }).click()
