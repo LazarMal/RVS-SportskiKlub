@@ -1,0 +1,110 @@
+name: RVS Windows regression
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  full-regression:
+    name: Full RVS regression
+    runs-on: windows-2022
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare result directory
+        shell: pwsh
+        run: New-Item -ItemType Directory -Path TestResults -Force | Out-Null
+
+      - name: Verify Windows toolchain
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $msbuild = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" `
+            -latest -requires Microsoft.Component.MSBuild -find "MSBuild\**\Bin\MSBuild.exe" |
+            Select-Object -First 1
+          if (-not $msbuild) { throw "MSBuild nije pronađen." }
+          "RVS_MSBUILD=$msbuild" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          & nuget help | Select-Object -First 2
+          & sqllocaldb versions
+          & "$env:ProgramFiles\IIS Express\iisexpress.exe" /? | Select-Object -First 4
+          Write-Host "MSBuild: $msbuild"
+
+      - name: Static specification audit
+        shell: pwsh
+        run: ./5_Testovi/Automatizacija/Test-Static.ps1
+
+      - name: Restore NuGet packages
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          & nuget restore ".\4_PrezentacioniSloj\KorisnickiInterfejs\KorisnickiInterfejs.sln" `
+            -ConfigFile ".\NuGet.config" -NonInteractive -Verbosity detailed 2>&1 |
+            Tee-Object -FilePath ".\TestResults\nuget-restore.log"
+          if ($LASTEXITCODE -ne 0) { throw "NuGet restore nije prošao." }
+
+      - name: Clean rebuild all eight projects
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          & $env:RVS_MSBUILD ".\4_PrezentacioniSloj\KorisnickiInterfejs\KorisnickiInterfejs.sln" `
+            /t:Rebuild /p:Configuration=Debug /m /v:minimal `
+            /fl "/flp:logfile=.\TestResults\build.log;verbosity=diagnostic" 2>&1 |
+            Tee-Object -FilePath ".\TestResults\build-console.log"
+          if ($LASTEXITCODE -ne 0) { throw "Clean rebuild nije prošao." }
+
+          $required = @(
+            ".\5_Testovi\PoslovnaLogikaTestovi\bin\Debug\PoslovnaLogikaTestovi.exe",
+            ".\3_SlojServisa\RESTApi\RESTServis\RESTServis\bin\RESTServis.dll",
+            ".\3_SlojServisa\RESTApi\RESTServis\RESTServis\bin\roslyn\csc.exe",
+            ".\4_PrezentacioniSloj\KorisnickiInterfejs\KorisnickiInterfejs\bin\KorisnickiInterfejs.dll",
+            ".\4_PrezentacioniSloj\KorisnickiInterfejs\KorisnickiInterfejs\bin\roslyn\csc.exe"
+          )
+          foreach ($file in $required) {
+            if (-not (Test-Path -LiteralPath $file)) { throw "Build nije napravio: $file" }
+          }
+
+      - name: Business rule tests repeated ten times per scenario
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          & ".\5_Testovi\PoslovnaLogikaTestovi\bin\Debug\PoslovnaLogikaTestovi.exe" 2>&1 |
+            Tee-Object -FilePath ".\TestResults\business-rule-tests.log"
+          if ($LASTEXITCODE -ne 0) { throw "Testovi poslovnog pravila nisu prošli." }
+
+      - name: Clean database and SQL tests
+        shell: pwsh
+        run: ./5_Testovi/Automatizacija/Test-Database.ps1
+
+      - name: Install browser test driver
+        shell: pwsh
+        run: npm install --no-save --no-audit --no-fund playwright-core
+
+      - name: REST, database and browser E2E regression
+        shell: pwsh
+        run: ./5_Testovi/Automatizacija/Invoke-RvsRuntimeTests.ps1
+
+      - name: Publish concise result summary
+        if: always()
+        shell: pwsh
+        run: |
+          "# RVS Windows regression" | Out-File $env:GITHUB_STEP_SUMMARY -Encoding utf8
+          "" | Out-File $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+          "- Commit: $env:GITHUB_SHA" | Out-File $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+          "- Runner: windows-2022" | Out-File $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+          "- Rezultati i screenshotovi su u artefaktu rvs-test-results." | Out-File $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rvs-test-results
+          path: TestResults
+          if-no-files-found: warn
+          retention-days: 14
