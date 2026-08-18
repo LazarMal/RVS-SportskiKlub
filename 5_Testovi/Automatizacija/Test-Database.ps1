@@ -40,7 +40,7 @@ $drop = "IF DB_ID(N'$database') IS NOT NULL BEGIN ALTER DATABASE [$database] SET
 & sqlcmd -S $server -E -d master -b -Q $drop | Tee-Object -FilePath $logPath -Append
 if ($LASTEXITCODE -ne 0) { throw "Čišćenje testne baze nije uspelo." }
 
-& sqlcmd -S $server -E -b -i $installScript 2>&1 | Tee-Object -FilePath $logPath -Append
+& sqlcmd -S $server -E -b -f 65001 -i $installScript 2>&1 | Tee-Object -FilePath $logPath -Append
 if ($LASTEXITCODE -ne 0) { throw "Čista instalacija baze nije uspela." }
 
 Assert-Equal (Invoke-SqlScalar "SELECT COUNT(*) FROM sys.tables WHERE name IN (N'Kandidat',N'SportskaDisciplina',N'ZahtevZaUclanjenje',N'Dokumentacija',N'RoditeljStaratelj',N'IstorijaStatusaZahteva',N'Korisnik');") 7 "Nisu kreirane sve obavezne tabele."
@@ -75,7 +75,7 @@ if ($env:GITHUB_ENV) {
     "RVS_E2E_REFERENT_PASSWORD=$referentPassword" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 }
 
-$secondRun = & sqlcmd -S $server -E -b -i $installScript 2>&1
+$secondRun = & sqlcmd -S $server -E -b -f 65001 -i $installScript 2>&1
 if ($LASTEXITCODE -eq 0) { throw "Drugo izvršavanje instalacionog skripta moralo je bezbedno da se prekine." }
 if (($secondRun | Out-String) -notmatch "već postoji") { throw "Drugo izvršavanje nije vratilo očekivanu zaštitnu poruku." }
 $secondRun | Tee-Object -FilePath $logPath -Append | Out-Null
