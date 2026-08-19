@@ -84,6 +84,12 @@ try {
         throw "Browser E2E testovi nisu prošli."
     }
 
+    & node (Join-Path $PSScriptRoot "capture-documentation-screenshots.js") 2>&1 |
+        Tee-Object -FilePath (Join-Path $ResultsDirectory "documentation-capture.log")
+    if ($LASTEXITCODE -ne 0) {
+        throw "Snimanje ekrana za dokumentaciju nije prošlo."
+    }
+
     $finalSql = @"
 SET NOCOUNT ON;
 SELECT CONCAT(
@@ -110,4 +116,4 @@ finally {
     }
 }
 
-Write-Host "RUNTIME PASS: SQL, REST i MVC browser E2E testovi su prošli."
+Write-Host "RUNTIME PASS: SQL, REST, MVC browser E2E i dokumentacioni screenshotovi su prošli."
