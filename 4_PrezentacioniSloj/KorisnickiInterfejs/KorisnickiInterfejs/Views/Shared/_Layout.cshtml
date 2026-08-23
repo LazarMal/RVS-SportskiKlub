@@ -12,8 +12,16 @@
         @if (Session["IDKorisnika"] != null)
         {
         <aside class="app-sidebar no-print">
-            <a class="app-brand" href="@Url.Action("Spisak", "ZahtevZaUclanjenje")">
-                <span class="brand-mark">SK</span>
+            <a class="app-brand" href="@Url.Action("Pocetna", "Pocetna")">
+                <span class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 120 120" focusable="false">
+                        <circle class="guest-emblem-ring" cx="60" cy="60" r="52"></circle>
+                        <path class="guest-emblem-laurel" d="M31 83c-10-10-15-23-13-38M89 83c10-10 15-23 13-38"></path>
+                        <path class="guest-emblem-leaves" d="M24 69l-10-3m12-8-9-7m13-3-5-11M96 69l10-3m-12-8 9-7m-13-3 5-11"></path>
+                        <path class="guest-emblem-shield" d="M60 25l27 10v22c0 20-11 34-27 42-16-8-27-22-27-42V35z"></path>
+                        <text class="guest-emblem-monogram" x="60" y="67" text-anchor="middle">SK</text>
+                    </svg>
+                </span>
                 <span class="brand-copy">
                     <strong>Sportski klub</strong>
                     <small>Evidencija članstva</small>
@@ -21,10 +29,11 @@
             </a>
             <ul class="app-nav">
                 <li><a class="nav-primary" href="@Url.Action("Dodaj", "ZahtevZaUclanjenje")"><span class="nav-symbol glyphicon glyphicon-plus"></span>Novi zahtev</a></li>
+                <li><a href="@Url.Action("Pocetna", "Pocetna")"><span class="nav-symbol glyphicon glyphicon-home"></span>Početna</a></li>
                 <li><a href="@Url.Action("Spisak", "ZahtevZaUclanjenje")"><span class="nav-symbol glyphicon glyphicon-list-alt"></span>Zahtevi</a></li>
                 <li>
-                    <a href="@(System.Configuration.ConfigurationManager.AppSettings["RestServisOsnovnaAdresa"] + "api/zahtevi")" target="_blank">
-                        <span class="nav-symbol glyphicon glyphicon-transfer"></span>REST API
+                    <a class="rest-nav-link" href="@System.Configuration.ConfigurationManager.AppSettings["RestServisOsnovnaAdresa"]" target="_blank" rel="noopener">
+                        <span class="nav-symbol glyphicon glyphicon-transfer"></span>REST servis
                     </a>
                 </li>
             </ul>
