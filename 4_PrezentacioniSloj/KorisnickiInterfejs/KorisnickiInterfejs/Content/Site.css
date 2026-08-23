@@ -47,14 +47,13 @@ a:hover, a:focus { color: #183c29; }
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 42px;
-    height: 42px;
-    border-radius: 13px 4px 13px 4px;
-    background: var(--accent);
-    color: var(--rail);
-    font-weight: 800;
-    letter-spacing: .04em;
+    flex: 0 0 52px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.025);
 }
+.brand-mark svg { display: block; width: 100%; height: 100%; }
 .brand-copy strong, .brand-copy small { display: block; }
 .brand-copy strong { font-size: 16px; letter-spacing: .02em; }
 .brand-copy small { margin-top: 2px; color: #afbbb3; font-size: 11px; }
