@@ -234,15 +234,32 @@ async function createThroughMvc(page, iteration) {
       assert(page.url().includes("/ZahtevZaUclanjenje/Spisak"), `Referent login nije uspeo u krugu ${i}.`);
       assert(await page.locator(".app-sidebar").count() === 1, `Bočni meni nije prikazan posle prijave u krugu ${i}.`);
       assert(await page.locator(".app-main-guest").count() === 0, `Gostujući raspored je ostao aktivan posle prijave u krugu ${i}.`);
+      assert(await page.locator(".app-sidebar .brand-mark svg").count() === 1, `Sportski grb nije prikazan posle prijave u krugu ${i}.`);
       assert(await page.locator('.app-sidebar a[href*="/ZahtevZaUclanjenje/Dodaj"]').count() === 1, `Link Novi zahtev nedostaje posle prijave u krugu ${i}.`);
-      assert(await page.locator('.app-sidebar a[href*="/ZahtevZaUclanjenje/Spisak"]').count() === 2, `Linkovi ka spisku zahteva nisu prikazani posle prijave u krugu ${i}.`);
-      assert(await page.locator('.app-sidebar a[href*="/api/zahtevi"]').count() === 1, `Link REST API nedostaje posle prijave u krugu ${i}.`);
+      assert(await page.locator('.app-sidebar a[href*="/Pocetna/Pocetna"]').count() === 2, `Linkovi ka početnoj stranici nisu prikazani posle prijave u krugu ${i}.`);
+      assert(await page.locator('.app-sidebar a[href*="/ZahtevZaUclanjenje/Spisak"]').count() === 1, `Link Zahtevi nedostaje posle prijave u krugu ${i}.`);
+      assert(await page.locator(".app-sidebar .rest-nav-link").count() === 1, `Link REST servis nedostaje posle prijave u krugu ${i}.`);
       await logout(page);
     }
     pass("uspešan login preko Stored Procedure", 10);
     pass("bočni meni prikazan posle prijave", 10);
     await login(page, referentUser, referentPassword);
     await capture(page, "spisak-zahteva.png");
+
+    const restOverviewPage = await context.newPage();
+    for (let i = 1; i <= 10; i++) {
+      await restOverviewPage.goto(`${restBase}/`, { waitUntil: "networkidle" });
+      assert(await restOverviewPage.locator(".service-shell").count() === 1, `Stilizovan REST pregled nije prikazan u krugu ${i}.`);
+      assert(await restOverviewPage.locator(".service-emblem svg").count() === 1, `Sportski grb nedostaje na REST pregledu u krugu ${i}.`);
+      assert(await restOverviewPage.locator('a[href="/api/zahtevi"]').count() >= 1, `REST resurs zahteva nije prikazan u krugu ${i}.`);
+      assert(await restOverviewPage.locator('a[href="/api/parametri/poslovna-pravila"]').count() >= 1, `REST resurs poslovnog pravila nije prikazan u krugu ${i}.`);
+      const overviewText = await restOverviewPage.locator("body").innerText();
+      assert(overviewText.includes("6 meseci"), `Parametar X=6 meseci nije prikazan u krugu ${i}.`);
+      assert(overviewText.includes("AKO") && overviewText.includes("ONDA") && overviewText.includes("Odobren"), `Tekst poslovnog pravila nije prikazan u krugu ${i}.`);
+      if (i === 1) await capture(restOverviewPage, "rest-servis.png");
+    }
+    pass("stilizovan REST pregled sa oba resursa", 10);
+    await restOverviewPage.close();
 
     const restParameterPage = await context.newPage();
     await restParameterPage.goto(`${restBase}/api/parametri/poslovna-pravila`, { waitUntil: "networkidle" });
