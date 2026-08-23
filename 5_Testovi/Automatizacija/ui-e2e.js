@@ -250,6 +250,8 @@ async function createThroughMvc(page, iteration) {
     for (let i = 1; i <= 10; i++) {
       await restOverviewPage.goto(`${restBase}/`, { waitUntil: "networkidle" });
       assert(await restOverviewPage.locator(".service-shell").count() === 1, `Stilizovan REST pregled nije prikazan u krugu ${i}.`);
+      const shellBackground = await restOverviewPage.locator(".service-shell").evaluate(element => getComputedStyle(element).backgroundImage);
+      assert(shellBackground !== "none" && shellBackground.includes("linear-gradient"), `Pozadina REST bočnog panela ne pokriva celu stranicu u krugu ${i}.`);
       assert(await restOverviewPage.locator(".service-emblem svg").count() === 1, `Sportski grb nedostaje na REST pregledu u krugu ${i}.`);
       assert(await restOverviewPage.locator('a[href="/api/zahtevi"]').count() >= 1, `REST resurs zahteva nije prikazan u krugu ${i}.`);
       assert(await restOverviewPage.locator('a[href="/api/parametri/poslovna-pravila"]').count() >= 1, `REST resurs poslovnog pravila nije prikazan u krugu ${i}.`);
