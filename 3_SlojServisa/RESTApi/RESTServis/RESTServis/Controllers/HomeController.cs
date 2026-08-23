@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
+using KlaseMapiranja;
+using RESTServis.Servisi;
 
 namespace RESTServis.Controllers
 {
@@ -11,8 +9,10 @@ namespace RESTServis.Controllers
         public ActionResult Index()
         {
             ViewBag.Title = "REST servis";
+            ParametriPoslovnihPravilaDto parametri =
+                ParametriPoslovnihPravilaDatoteka.Ucitaj();
 
-            return View("~/Views/Pocetna/Index.cshtml");
+            return View("~/Views/Pocetna/Index.cshtml", parametri);
         }
     }
 }

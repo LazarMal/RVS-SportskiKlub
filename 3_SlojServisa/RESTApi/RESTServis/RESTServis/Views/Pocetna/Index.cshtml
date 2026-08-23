@@ -1,40 +1,94 @@
-﻿@{
+﻿@model KlaseMapiranja.ParametriPoslovnihPravilaDto
+@{
     ViewBag.Title = "REST servis";
 }
 
-<div class="jumbotron">
-    <h1>REST servis za zahteve</h1>
-    <p class="lead">
-        Servisni sloj evidencije učlanjivanja kandidata u sportski klub.
-        Servis omogućava pristup podacima o zahtevima u JSON formatu.
-    </p>
-
+<section class="service-hero">
+    <p class="service-kicker">Višeslojna arhitektura</p>
+    <h1>REST servis sportskog kluba</h1>
     <p>
-        <a href="/api/zahtevi" class="btn btn-primary btn-lg">
-            Prikaži sve zahteve
-        </a>
+        Servisni sloj obezbeđuje CRUD nad zahtevima za učlanjenje i parametre
+        koje sloj poslovne logike koristi prilikom odlučivanja.
     </p>
+    <div class="service-actions">
+        <a href="@Url.Content("~/api/zahtevi")" class="service-button service-button-accent">
+            Otvori zahteve JSON
+        </a>
+        <a href="@Url.Content("~/api/parametri/poslovna-pravila")" class="service-button service-button-outline">
+            Otvori poslovno pravilo JSON
+        </a>
+    </div>
+</section>
+
+<div class="service-grid">
+    <section class="service-card service-rule-card">
+        <span class="service-card-index">01 · PARAMETAR ODLUČIVANJA</span>
+        <div class="service-rule-value">
+            <strong>@Model.MaksimalnaStarostSportskogPregledaMeseci</strong>
+            <span>meseci</span>
+        </div>
+        <h2>Maksimalna starost sportskog pregleda</h2>
+        <p>
+            Vrednost se čita iz spoljašnjeg JSON fajla, izlaže kroz REST servis
+            i koristi u sloju poslovne logike.
+        </p>
+        <code>GET /api/parametri/poslovna-pravila</code>
+    </section>
+
+    <section class="service-card">
+        <span class="service-card-index">02 · POSLOVNO PRAVILO</span>
+        <h2>Uslov za odobrenje zahteva</h2>
+        <p class="service-rule-text">
+            <strong>AKO</strong> je dostavljena potvrda o realizovanom sportskom
+            pregledu koji nije stariji od
+            <strong>@Model.MaksimalnaStarostSportskogPregledaMeseci meseci</strong>
+            i evidentiran je položen test sposobnosti,
+            <strong>ONDA</strong> zahtev može dobiti status „Odobren“.
+        </p>
+        <div class="service-secondary-parameter">
+            Starosna granica za saglasnost:
+            <strong>@Model.StarosnaGranicaZaSaglasnost godina</strong>
+        </div>
+    </section>
 </div>
 
-<div class="row">
-    <div class="col-md-4">
-        <h2>Pregled zahteva</h2>
-        <p>
-            REST servis omogućava CRUD nad zahtevima za učlanjenje i preuzimanje parametara poslovnih pravila.
-        </p>
+<section class="service-card service-endpoints">
+    <div class="service-section-heading">
+        <div>
+            <span class="service-card-index">03 · DOSTUPNI RESURSI</span>
+            <h2>REST krajnje tačke</h2>
+        </div>
+        <span class="service-format-badge">JSON</span>
     </div>
 
-    <div class="col-md-4">
-        <h2>Pregled po identifikatoru</h2>
-        <p>
-            Pojedinačni zahtev može se dobaviti prosleđivanjem identifikatora zahteva u URL adresi.
-        </p>
+    <div class="service-endpoint-row">
+        <span class="service-method">GET</span>
+        <code>/api/zahtevi</code>
+        <span>Spisak svih zahteva uz opcioni filter</span>
     </div>
-
-    <div class="col-md-4">
-        <h2>CRUD operacije</h2>
-        <p>
-            Servis podržava dodavanje, izmenu i brisanje zahteva korišćenjem HTTP metoda.
-        </p>
+    <div class="service-endpoint-row">
+        <span class="service-method">GET</span>
+        <code>/api/zahtevi/{id}</code>
+        <span>Pojedinačni zahtev sa pripadajućim detaljima</span>
     </div>
-</div>
+    <div class="service-endpoint-row">
+        <span class="service-method service-method-write">POST</span>
+        <code>/api/zahtevi</code>
+        <span>Dodavanje master-detail zahteva</span>
+    </div>
+    <div class="service-endpoint-row">
+        <span class="service-method service-method-write">PUT</span>
+        <code>/api/zahtevi/{id}</code>
+        <span>Izmena postojećeg zahteva</span>
+    </div>
+    <div class="service-endpoint-row">
+        <span class="service-method service-method-delete">DELETE</span>
+        <code>/api/zahtevi/{id}</code>
+        <span>Brisanje zahteva i njegovih detalja</span>
+    </div>
+    <div class="service-endpoint-row service-endpoint-rule">
+        <span class="service-method">GET</span>
+        <code>/api/parametri/poslovna-pravila</code>
+        <span>Parametri odlučivanja iz spoljašnjeg JSON fajla</span>
+    </div>
+</section>
