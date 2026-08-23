@@ -44,7 +44,7 @@ namespace SportskiKlub.Controllers
             Session["Prezime"] = korisnik.Prezime;
             Session["Uloga"] = korisnik.Uloga;
 
-            return RedirectToAction("Spisak", "ZahtevZaUclanjenje");
+            return RedirectToAction("Pocetna", "Pocetna");
         }
 
         public ActionResult Odjava()
