@@ -231,7 +231,7 @@ async function createThroughMvc(page, iteration) {
 
     for (let i = 1; i <= 10; i++) {
       await login(page, referentUser, referentPassword);
-      assert(page.url().includes("/ZahtevZaUclanjenje/Spisak"), `Referent login nije uspeo u krugu ${i}.`);
+      assert(page.url().includes("/Pocetna/Pocetna"), `Referent login nije otvorio početnu stranicu u krugu ${i}.`);
       assert(await page.locator(".app-sidebar").count() === 1, `Bočni meni nije prikazan posle prijave u krugu ${i}.`);
       assert(await page.locator(".app-main-guest").count() === 0, `Gostujući raspored je ostao aktivan posle prijave u krugu ${i}.`);
       assert(await page.locator(".app-sidebar .brand-mark svg").count() === 1, `Sportski grb nije prikazan posle prijave u krugu ${i}.`);
@@ -244,6 +244,8 @@ async function createThroughMvc(page, iteration) {
     pass("uspešan login preko Stored Procedure", 10);
     pass("bočni meni prikazan posle prijave", 10);
     await login(page, referentUser, referentPassword);
+    await capture(page, "pocetna-posle-prijave.png");
+    await page.goto(`${mvcBase}/ZahtevZaUclanjenje/Spisak`, { waitUntil: "networkidle" });
     await capture(page, "spisak-zahteva.png");
 
     const restOverviewPage = await context.newPage();
