@@ -21,7 +21,16 @@ body {
 a { color: #315d42; }
 a:hover, a:focus { color: #183c29; }
 
-.service-shell { min-height: 100vh; }
+.service-shell {
+    min-height: 100vh;
+    background: linear-gradient(
+        to right,
+        var(--rail) 0,
+        var(--rail) 252px,
+        var(--paper) 252px,
+        var(--paper) 100%
+    );
+}
 .service-sidebar {
     position: fixed;
     inset: 0 auto 0 0;
@@ -242,6 +251,7 @@ a:hover, a:focus { color: #183c29; }
 .service-footer { padding: 8px 34px 28px; color: var(--muted); font-size: 12px; }
 
 @media (max-width: 991px) {
+    .service-shell { background: var(--paper); }
     .service-sidebar { position: relative; width: 100%; min-height: auto; padding: 18px; }
     .service-brand { margin-bottom: 16px; }
     .service-nav { display: flex; flex-wrap: wrap; gap: 6px; }
