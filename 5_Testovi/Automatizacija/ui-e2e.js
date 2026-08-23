@@ -230,9 +230,9 @@ async function createThroughMvc(page, iteration) {
       assert(page.url().includes("/ZahtevZaUclanjenje/Spisak"), `Referent login nije uspeo u krugu ${i}.`);
       assert(await page.locator(".app-sidebar").count() === 1, `Bočni meni nije prikazan posle prijave u krugu ${i}.`);
       assert(await page.locator(".app-main-guest").count() === 0, `Gostujući raspored je ostao aktivan posle prijave u krugu ${i}.`);
-      assert(await page.getByRole("link", { name: "Novi zahtev", exact: true }).count() === 1, `Link Novi zahtev nedostaje posle prijave u krugu ${i}.`);
-      assert(await page.getByRole("link", { name: "Zahtevi", exact: true }).count() === 1, `Link Zahtevi nedostaje posle prijave u krugu ${i}.`);
-      assert(await page.getByRole("link", { name: "REST API", exact: true }).count() === 1, `Link REST API nedostaje posle prijave u krugu ${i}.`);
+      assert(await page.locator('.app-sidebar a[href*="/ZahtevZaUclanjenje/Dodaj"]').count() === 1, `Link Novi zahtev nedostaje posle prijave u krugu ${i}.`);
+      assert(await page.locator('.app-sidebar a[href*="/ZahtevZaUclanjenje/Spisak"]').count() === 2, `Linkovi ka spisku zahteva nisu prikazani posle prijave u krugu ${i}.`);
+      assert(await page.locator('.app-sidebar a[href*="/api/zahtevi"]').count() === 1, `Link REST API nedostaje posle prijave u krugu ${i}.`);
       await logout(page);
     }
     pass("uspešan login preko Stored Procedure", 10);
