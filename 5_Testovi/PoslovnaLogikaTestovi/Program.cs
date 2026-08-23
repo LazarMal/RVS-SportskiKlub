@@ -15,13 +15,21 @@ namespace PoslovnaLogikaTestovi
 
             try
             {
-                Proveri("validan zahtev", DateTime.Today.AddMonths(-1), "Položen", true);
-                Proveri("pregled stariji od X meseci", DateTime.Today.AddMonths(-6).AddDays(-1), "Položen", false);
-                Proveri("test nije položen", DateTime.Today.AddMonths(-1), "Nije položen", false);
-                Proveri("test nije realizovan", DateTime.Today.AddMonths(-1), "Nije realizovan", false);
-                Proveri("tačno X meseci - inkluzivna granica", DateTime.Today.AddMonths(-6), "Položen", true);
+                const int brojPonavljanja = 10;
 
-                Console.WriteLine("SVI TESTOVI SU PROŠLI.");
+                for (int krug = 1; krug <= brojPonavljanja; krug++)
+                {
+                    Proveri(krug, "validan zahtev", DateTime.Today.AddMonths(-1), "Položen", true, true, true);
+                    Proveri(krug, "pregled stariji od X meseci", DateTime.Today.AddMonths(-6).AddDays(-1), "Položen", false, true, true);
+                    Proveri(krug, "test nije položen", DateTime.Today.AddMonths(-1), "Nije položen", false, true, true);
+                    Proveri(krug, "test nije realizovan", DateTime.Today.AddMonths(-1), "Nije realizovan", false, true, true);
+                    Proveri(krug, "tačno X meseci - inkluzivna granica", DateTime.Today.AddMonths(-6), "Položen", true, true, true);
+                    Proveri(krug, "pregled u budućnosti", DateTime.Today.AddDays(1), "Položen", false, true, true);
+                    Proveri(krug, "nedostaje potvrda pregleda", DateTime.Today.AddMonths(-1), "Položen", false, false, true);
+                    Proveri(krug, "nedostaje evidencija testa", DateTime.Today.AddMonths(-1), "Položen", false, true, false);
+                }
+
+                Console.WriteLine("SVI TESTOVI SU PROŠLI. Ukupno scenarija: " + (brojPonavljanja * 8) + ".");
                 return 0;
             }
             catch (Exception ex)
@@ -32,14 +40,21 @@ namespace PoslovnaLogikaTestovi
         }
 
         private static void Proveri(
+            int krug,
             string naziv,
             DateTime datumPregleda,
             string rezultatTesta,
-            bool ocekujeUspeh)
+            bool ocekujeUspeh,
+            bool potvrdaPregleda,
+            bool evidencijaTesta)
         {
             var repozitorijum = new LazniRepozitorijum
             {
-                Zahtev = KreirajZahtev(datumPregleda, rezultatTesta)
+                Zahtev = KreirajZahtev(
+                    datumPregleda,
+                    rezultatTesta,
+                    potvrdaPregleda,
+                    evidencijaTesta)
             };
             var parametri = new LazniServisParametara();
             var servis = new OdobravanjeZahtevaServis(repozitorijum, parametri);
@@ -51,10 +66,14 @@ namespace PoslovnaLogikaTestovi
             Zahtev(parametri.BrojPoziva == 1, naziv + ": servis parametara nije pozvan tačno jednom.");
             Zahtev(repozitorijum.Odobren == ocekujeUspeh, naziv + ": status odobrenja nije očekivan.");
 
-            Console.WriteLine("PROŠAO: " + naziv);
+            Console.WriteLine("PROŠAO [{0}/10]: {1}", krug, naziv);
         }
 
-        private static ZahtevZaUclanjenje KreirajZahtev(DateTime datumPregleda, string rezultatTesta)
+        private static ZahtevZaUclanjenje KreirajZahtev(
+            DateTime datumPregleda,
+            string rezultatTesta,
+            bool potvrdaPregleda,
+            bool evidencijaTesta)
         {
             return new ZahtevZaUclanjenje
             {
@@ -66,12 +85,12 @@ namespace PoslovnaLogikaTestovi
                     new Dokumentacija
                     {
                         NazivDokumenta = OdobravanjeZahtevaServis.PotvrdaPregleda,
-                        Dostavljeno = true
+                        Dostavljeno = potvrdaPregleda
                     },
                     new Dokumentacija
                     {
                         NazivDokumenta = OdobravanjeZahtevaServis.EvidencijaTesta,
-                        Dostavljeno = true
+                        Dostavljeno = evidencijaTesta
                     }
                 }
             };

@@ -9,6 +9,8 @@
 </head>
 <body>
     <div class="app-shell">
+        @if (Session["IDKorisnika"] != null)
+        {
         <aside class="app-sidebar no-print">
             <a class="app-brand" href="@Url.Action("Spisak", "ZahtevZaUclanjenje")">
                 <span class="brand-mark">SK</span>
@@ -28,8 +30,9 @@
             </ul>
             <div class="sidebar-note">Evidencija učlanjivanja kandidata u sportski klub</div>
         </aside>
+        }
 
-        <main class="app-main">
+        <main class="app-main @(Session["IDKorisnika"] == null ? "app-main-guest" : "")">
             <header class="app-topbar no-print clearfix">
                 <div class="topbar-context">
                     <span class="eyebrow">Informacioni sistem</span>

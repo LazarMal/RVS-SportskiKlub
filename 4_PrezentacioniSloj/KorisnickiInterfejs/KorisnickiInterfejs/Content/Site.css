@@ -87,6 +87,8 @@ a:hover, a:focus { color: #183c29; }
     line-height: 1.55;
 }
 .app-main { min-height: 100vh; margin-left: 252px; }
+.app-main-guest { margin-left: 0; }
+.app-main-guest .body-content { max-width: none; }
 .app-topbar {
     min-height: 72px;
     padding: 16px 34px;
