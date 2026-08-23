@@ -209,11 +209,15 @@ async function createThroughMvc(page, iteration) {
       assert(protectedResponse.ok(), `Zaštićena ruta nije odgovorila u krugu ${i}.`);
       assert(page.url().includes("/Nalog/Prijava"), `Ruta bez sesije nije preusmerila na prijavu u krugu ${i}.`);
       assert(await page.locator(".app-sidebar").count() === 0, `Bočni meni je vidljiv pre prijave u krugu ${i}.`);
-      assert(await page.locator(".app-main-guest").count() === 1, `Gostujući raspored pune širine nije aktivan u krugu ${i}.`);
+      assert(await page.locator(".guest-brand-rail").count() === 1, `Sportski identitet nije prikazan pre prijave u krugu ${i}.`);
+      assert(await page.locator(".guest-brand-rail a").count() === 0, `Gostujući sportski identitet ne sme sadržati linkove u krugu ${i}.`);
+      assert(await page.locator(".guest-brand-rail .app-nav").count() === 0, `Gostujući sportski identitet ne sme sadržati navigaciju u krugu ${i}.`);
+      assert(await page.locator(".app-main-guest").count() === 1, `Gostujući raspored nije aktivan u krugu ${i}.`);
       if (i === 1) await capture(page, "login.png");
     }
     pass("zaštita rute bez sesije", 10);
     pass("bočni meni skriven pre prijave", 10);
+    pass("sportski identitet bez navigacije pre prijave", 10);
 
     for (let i = 1; i <= 10; i++) {
       await login(page, adminUser, `namerno-pogresno-${i}`);
