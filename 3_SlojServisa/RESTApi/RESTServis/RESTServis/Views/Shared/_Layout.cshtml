@@ -1,64 +1,65 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="sr">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewBag.Title - REST servis sportskog kluba</title>
-
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
-
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button"
-                        class="navbar-toggle"
-                        data-toggle="collapse"
-                        data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
+    <div class="service-shell">
+        <aside class="service-sidebar">
+            <a class="service-brand" href="@Url.Action("Index", "Home", new { area = "" })">
+                <span class="service-emblem" aria-hidden="true">
+                    <svg viewBox="0 0 120 120" focusable="false">
+                        <circle class="service-emblem-ring" cx="60" cy="60" r="52"></circle>
+                        <path class="service-emblem-laurel" d="M31 83c-10-10-15-23-13-38M89 83c10-10 15-23 13-38"></path>
+                        <path class="service-emblem-leaves" d="M24 69l-10-3m12-8-9-7m13-3-5-11M96 69l10-3m-12-8 9-7m-13-3 5-11"></path>
+                        <path class="service-emblem-shield" d="M60 25l27 10v22c0 20-11 34-27 42-16-8-27-22-27-42V35z"></path>
+                        <text class="service-emblem-monogram" x="60" y="67" text-anchor="middle">SK</text>
+                    </svg>
+                </span>
+                <span class="service-brand-copy">
+                    <strong>Sportski klub</strong>
+                    <small>REST servis</small>
+                </span>
+            </a>
 
-                @Html.ActionLink(
-                    "REST servis - sportski klub",
-                    "Index",
-                    "Home",
-                    new { area = "" },
-                    new { @class = "navbar-brand" })
+            <nav class="service-nav" aria-label="REST resursi">
+                <a class="is-active" href="@Url.Action("Index", "Home", new { area = "" })">
+                    <span class="glyphicon glyphicon-dashboard"></span>Pregled servisa
+                </a>
+                <a href="@Url.Content("~/api/zahtevi")">
+                    <span class="glyphicon glyphicon-list-alt"></span>Zahtevi JSON
+                </a>
+                <a href="@Url.Content("~/api/parametri/poslovna-pravila")">
+                    <span class="glyphicon glyphicon-cog"></span>Poslovno pravilo JSON
+                </a>
+            </nav>
+
+            <div class="service-sidebar-note">
+                Servisni sloj višeslojne aplikacije
+            </div>
+        </aside>
+
+        <main class="service-main">
+            <header class="service-topbar">
+                <div>
+                    <span class="service-eyebrow">Sloj servisa</span>
+                    <strong>@ViewBag.Title</strong>
+                </div>
+                <span class="service-status"><i></i> REST API</span>
+            </header>
+
+            <div class="service-content">
+                @RenderBody()
             </div>
 
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>
-                        @Html.ActionLink(
-                            "Početna",
-                            "Index",
-                            "Home",
-                            new { area = "" },
-                            null)
-                    </li>
-
-                    <li>
-                        <a href="/api/zahtevi">Zahtevi JSON</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div class="container body-content">
-        @RenderBody()
-
-        <hr />
-
-        <footer>
-            <p>
-                &copy; @DateTime.Now.Year - REST servis evidencije učlanjivanja
-            </p>
-        </footer>
+            <footer class="service-footer">
+                &copy; @DateTime.Now.Year · REST servis evidencije učlanjivanja
+            </footer>
+        </main>
     </div>
 
     @Scripts.Render("~/bundles/jquery")
