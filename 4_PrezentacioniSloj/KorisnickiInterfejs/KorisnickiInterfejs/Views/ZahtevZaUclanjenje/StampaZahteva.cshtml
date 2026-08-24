@@ -20,13 +20,15 @@
         th { background: #ededed; text-align: left; }
         .label { width: 19%; font-weight: bold; }
         .value { width: 31%; }
+        .choice { margin-right: 3mm; white-space: nowrap; }
+        .choice-box { display: inline-block; width: 3.1mm; height: 3.1mm; margin-right: 1mm; border: 1px solid #333; line-height: 2.7mm; text-align: center; vertical-align: -0.4mm; font-family: Arial, sans-serif; font-size: 9px; font-weight: bold; }
         .docs .number { width: 9%; text-align: center; }
         .docs .answer { width: 22%; text-align: center; font-weight: bold; }
         .docs thead th { background: #dfe1e0; text-align: center; }
-        .note { min-height: 10mm; padding: 2mm; border: 1px solid #333; white-space: pre-wrap; }
         .signatures th { background: #dfe1e0; text-align: center; }
-        .signatures td { height: 17mm; padding: 4mm 3mm 2mm; vertical-align: bottom; }
-        .line { display: inline-block; min-width: 27mm; border-bottom: 1px solid #222; }
+        .signatures td { height: 17mm; padding: 4mm 2mm 2mm; vertical-align: bottom; white-space: nowrap; font-size: 10px; }
+        .line { display: inline-block; min-width: 21mm; border-bottom: 1px solid #222; }
+        .date-line { display: inline-block; min-width: 17mm; border-bottom: 1px solid #222; }
         .footer-note { margin-top: 7mm; color: #444; font-size: 9px; text-align: center; }
         @@page { size: A4 portrait; margin: 0; }
         @@media print {
@@ -60,9 +62,23 @@
         <table>
             <tr><th class="label">Sportska disciplina</th><td colspan="3">@Model.SportskaDisciplina.Naziv</td></tr>
             <tr><th>Datum sportskog pregleda</th><td colspan="3">@Model.DatumSportskogPregleda.ToString("dd.MM.yyyy")</td></tr>
-            <tr><th>Test sposobnosti</th><td colspan="3">@Model.RezultatTestaSposobnosti</td></tr>
-            <tr><th>Status zahteva</th><td colspan="3">@Model.StatusZahteva</td></tr>
-            <tr><th>Napomena</th><td colspan="3">@Model.Napomena</td></tr>
+            <tr>
+                <th>Test sposobnosti</th>
+                <td colspan="3">
+                    <span class="choice"><span class="choice-box">@(Model.RezultatTestaSposobnosti == "Položen" ? "X" : "")</span>Položen</span>
+                    <span class="choice"><span class="choice-box">@(Model.RezultatTestaSposobnosti == "Nije položen" ? "X" : "")</span>Nije položen</span>
+                    <span class="choice"><span class="choice-box">@(Model.RezultatTestaSposobnosti == "Nije realizovan" ? "X" : "")</span>Nije realizovan</span>
+                </td>
+            </tr>
+            <tr>
+                <th>Status zahteva</th>
+                <td colspan="3">
+                    <span class="choice"><span class="choice-box">@(Model.StatusZahteva == "U obradi" ? "X" : "")</span>U obradi</span>
+                    <span class="choice"><span class="choice-box">@(Model.StatusZahteva == "Na proveri" ? "X" : "")</span>Na proveri</span>
+                    <span class="choice"><span class="choice-box">@(Model.StatusZahteva == "Odobren" ? "X" : "")</span>Odobren</span>
+                    <span class="choice"><span class="choice-box">@(Model.StatusZahteva == "Odbijen" ? "X" : "")</span>Odbijen</span>
+                </td>
+            </tr>
         </table>
 
         <h2>Priložena dokumentacija</h2>
@@ -72,7 +88,7 @@
             @foreach (var d in Model.Dokumentacija.OrderBy(d => d.IDDokumentacije))
             {
                 redniBroj++;
-                <tr><td class="number">@redniBroj</td><td>@d.NazivDokumenta</td><td class="answer">@(d.Dostavljeno ? "DA" : "NE")</td></tr>
+                <tr><td class="number">@redniBroj</td><td>@d.NazivDokumenta</td><td class="answer"><span class="choice-box">@(d.Dostavljeno ? "X" : "")</span></td></tr>
             }
             </tbody>
         </table>
@@ -80,16 +96,16 @@
         <h2>Roditelj / staratelj – samo za maloletnog kandidata</h2>
         <table>
             <tr><th class="label">Ime i prezime</th><td class="value">@(roditelj != null ? roditelj.ImePrezime : "—")</td><th class="label">JMBG</th><td class="value">@(roditelj != null ? roditelj.JMBG : "—")</td></tr>
-            <tr><th>Srodstvo</th><td>@(roditelj != null ? roditelj.Srodstvo : "—")</td><th>Telefon / e-mail</th><td>@(roditelj != null ? roditelj.KontaktTelefon + " / " + roditelj.Email : "—")</td></tr>
+            <tr><th>Srodstvo</th><td>@(roditelj != null ? roditelj.Srodstvo : "—")</td><th>Telefon</th><td>@(roditelj != null ? roditelj.KontaktTelefon : "—")</td></tr>
         </table>
 
         <h2>Odluka i potpisi</h2>
         <table class="signatures">
             <thead><tr><th>Kandidat</th><th>Roditelj / staratelj</th><th>Ovlašćeno lice kluba</th></tr></thead>
             <tbody><tr>
-                <td>Potpis: <span class="line"></span></td>
-                <td>Potpis: <span class="line"></span></td>
-                <td>Potpis: <span class="line"></span></td>
+                <td>Potpis: <span class="line"></span>&nbsp;&nbsp; Datum: <span class="date-line"></span></td>
+                <td>Potpis: <span class="line"></span>&nbsp;&nbsp; Datum: <span class="date-line"></span></td>
+                <td>Potpis: <span class="line"></span>&nbsp;&nbsp; Datum: <span class="date-line"></span></td>
             </tr></tbody>
         </table>
         <div class="footer-note">Parametarska štampa · podaci se popunjavaju iz izabranog zahteva</div>
