@@ -68,6 +68,49 @@ foreach ($view in $requiredViews) {
     Assert-True ($viewNames -contains $view) "Nedostaje obavezni prikaz: $view"
 }
 
+$dataLibraryPath = Join-Path $RepoRoot "1_SlojPodataka\DBUtils\DBUtils"
+$oldDataLibraryPath = Join-Path $RepoRoot "1_SlojPodataka\TehnoloskeKlase\DBUtils"
+$repositoryPath = Join-Path $dataLibraryPath "Repozitorijumi"
+$technologyPath = Join-Path $dataLibraryPath "TehnoloskeKlase"
+
+Assert-True (Test-Path -LiteralPath (Join-Path $dataLibraryPath "DBUtils.csproj")) "DBUtils Class Library nije na očekivanoj putanji van foldera TehnoloskeKlase."
+Assert-True (-not (Test-Path -LiteralPath $oldDataLibraryPath)) "DBUtils projekat je i dalje unutar spoljnog foldera TehnoloskeKlase."
+Assert-True (Test-Path -LiteralPath $repositoryPath) "Nedostaje izdvojeni folder Repozitorijumi."
+Assert-True (Test-Path -LiteralPath $technologyPath) "Nedostaje izdvojeni folder TehnoloskeKlase."
+
+$requiredRepositoryFiles = @(
+    "IKandidatRepozitorijum.cs",
+    "IKorisnikRepozitorijum.cs",
+    "ISportskaDisciplinaRepozitorijum.cs",
+    "IZahtevZaUclanjenjeRepozitorijum.cs",
+    "KandidatRepozitorijum.cs",
+    "KorisnikRepozitorijum.cs",
+    "SportskaDisciplinaRepozitorijum.cs",
+    "ZahtevZaUclanjenjeRepozitorijum.cs"
+)
+foreach ($file in $requiredRepositoryFiles) {
+    Assert-True (Test-Path -LiteralPath (Join-Path $repositoryPath $file)) "Repozitorijumska klasa nije u izdvojenom folderu: $file"
+}
+
+$requiredTechnologyFiles = @(
+    "OsnovnaTehnoloskaKlasa.cs",
+    "TabelaKlasa.cs"
+)
+foreach ($file in $requiredTechnologyFiles) {
+    Assert-True (Test-Path -LiteralPath (Join-Path $technologyPath $file)) "Tehnološka klasa nije u izdvojenom folderu: $file"
+}
+
+$repositoryFilesInTechnologyFolder = Get-ChildItem -Path $technologyPath -Recurse -File -Filter *Repozitorijum.cs
+Assert-True ($null -eq $repositoryFilesInTechnologyFolder) "Repozitorijumske klase ne smeju biti u folderu TehnoloskeKlase."
+
+$restHomeController = Join-Path $RepoRoot "3_SlojServisa\RESTApi\RESTServis\RESTServis\Controllers\HomeController.cs"
+$restPocetnaController = Join-Path $RepoRoot "3_SlojServisa\RESTApi\RESTServis\RESTServis\Controllers\PocetnaController.cs"
+Assert-True (-not (Test-Path -LiteralPath $restHomeController)) "REST servis i dalje sadrži HomeController.cs."
+Assert-True (Test-Path -LiteralPath $restPocetnaController) "REST servis nema PocetnaController.cs."
+Assert-True (-not $allSource.Contains("class HomeController")) "REST servis i dalje sadrži klasu HomeController."
+Assert-True ($allSource.Contains("class PocetnaController")) "REST servis nema klasu PocetnaController."
+Assert-True (-not ($allSource -match 'controller\s*=\s*"Home"')) "REST podrazumevana ruta i dalje koristi kontroler Home."
+
 $requiredProjects = @(
     "KlasePodataka",
     "DBUtils",
@@ -84,4 +127,4 @@ foreach ($project in $requiredProjects) {
     Assert-True ($solution -match ('Project\(".*?"\) = "' + [regex]::Escape($project) + '"')) "Glavni solution ne sadrži projekat: $project"
 }
 
-Write-Host "STATIC PASS: XML fajlova $($xmlFiles.Count), nema legacy termina, nema apsolutnih HintPath putanja, svi obavezni simboli/prikazi/projekti postoje."
+Write-Host "STATIC PASS: XML fajlova $($xmlFiles.Count), nema legacy termina ni apsolutnih HintPath putanja, repozitorijumi su odvojeni od tehnoloških klasa, REST početni kontroler je na srpskom i svi obavezni simboli/prikazi/projekti postoje."

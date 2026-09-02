@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KorisnickiInterfejs", "Kori
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KlasePodataka", "..\..\1_SlojPodataka\KlasePodataka\KlasePodataka\KlasePodataka\KlasePodataka.csproj", "{A97EFA11-6BF2-4935-81D7-5030AC0FB63D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBUtils", "..\..\1_SlojPodataka\TehnoloskeKlase\DBUtils\DBUtils\DBUtils.csproj", "{0D7CB5FE-D426-4FF4-9A0D-512CCE060300}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBUtils", "..\..\1_SlojPodataka\DBUtils\DBUtils\DBUtils.csproj", "{0D7CB5FE-D426-4FF4-9A0D-512CCE060300}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoslovnaLogika", "..\..\2_SlojPoslovneLogike\PoslovnaLogika\PoslovnaLogika\PoslovnaLogika.csproj", "{1D825E26-19DF-423A-9745-3AA9C7817BD7}"
 EndProject

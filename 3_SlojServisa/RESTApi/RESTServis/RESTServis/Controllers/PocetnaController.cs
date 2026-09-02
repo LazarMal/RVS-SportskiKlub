@@ -4,7 +4,7 @@ using RESTServis.Servisi;
 
 namespace RESTServis.Controllers
 {
-    public class HomeController : Controller
+    public class PocetnaController : Controller
     {
         public ActionResult Index()
         {
